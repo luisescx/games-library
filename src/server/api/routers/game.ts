@@ -6,7 +6,7 @@ export const gameRouter = createTRPCRouter({
   getGames: publicProcedure
     .input(z.object({ page: z.number() }))
     .query(async ({ ctx, input }) => {
-      const res = await ctx.dbGames.getGames(input.page);
+      const res = await ctx.apiGames.getGames(input.page);
 
       return res;
     }),
