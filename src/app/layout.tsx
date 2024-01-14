@@ -11,7 +11,7 @@ import { NavBar } from "./_components/nav-bar";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -28,11 +28,14 @@ export default function RootLayout({
     <html
       lang="en"
       className={clsx(
-        "m-0 box-border h-full scroll-smooth bg-white p-0 antialiased",
+        "m-0 box-border h-full w-full scroll-smooth p-0 antialiased",
         inter.className,
       )}
     >
-      <body className="m-0 box-border flex h-full flex-col bg-slate-800 p-0">
+      <body
+        className="m-0 box-border flex h-full w-full flex-col bg-slate-800 p-0"
+        suppressHydrationWarning={true}
+      >
         <TRPCReactProvider cookies={cookies().toString()}>
           <NavBar />
           {children}
