@@ -8,6 +8,12 @@ export const env = createEnv({
    */
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
+    RAWG_API_KEY: z.string({
+      required_error: "You forgot to add the RAWG api key",
+    }),
+    RAWG_API_URL: z.string({
+      required_error: "You forgot to add the RAWG api url",
+    }),
   },
 
   /**
@@ -25,6 +31,8 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    RAWG_API_KEY: process.env.RAWG_API_KEY,
+    RAWG_API_URL: process.env.RAWG_API_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
