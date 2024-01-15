@@ -1,5 +1,5 @@
-import { Container } from "./_components/container";
-import { Header } from "./_components/header";
+import { Container } from "./_components/ui/container";
+import { Header } from "./_components/ui/header";
 import { Games } from "./_components/games";
 
 export default async function Home() {
