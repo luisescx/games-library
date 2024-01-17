@@ -7,6 +7,7 @@ import { type Game } from "@/server/services/external-api/models/game";
 import { type GameData } from "@/server/services/external-api/api";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { GameImageLoader } from "./game-image-loader";
 
 const GAMES_LIST = [
   {
@@ -138,47 +139,53 @@ const GAMES_LIST = [
 ] as Game[];
 
 export function Games() {
-  const [page, setPage] = useState(1);
-  const [gameData, setGameData] = useState<GameData>({
-    games: [],
-    next: null,
-    previous: null,
-  });
+  // const [page, setPage] = useState(1);
+  // const [gameData, setGameData] = useState<GameData>({
+  //   games: [],
+  //   next: null,
+  //   previous: null,
+  // });
 
-  const { data, isLoading } = api.game.getGames.useQuery(
-    { page },
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-    },
-  );
+  // const { data, isLoading } = api.game.getGames.useQuery(
+  //   { page },
+  //   {
+  //     retry: false,
+  //     refetchOnWindowFocus: false,
+  //   },
+  // );
 
-  useEffect(() => {
-    if (data?.games && data.games.length > 0) {
-      setGameData((oldValue) => {
-        const newList = [...oldValue.games, ...data?.games];
+  // useEffect(() => {
+  //   if (data?.games && data.games.length > 0) {
+  //     setGameData((oldValue) => {
+  //       const newList = [...oldValue.games, ...data?.games];
 
-        return {
-          previous: data.previous,
-          next: data.next,
-          games: newList,
-        };
-      });
-    }
-  }, [data?.games]);
+  //       return {
+  //         previous: data.previous,
+  //         next: data.next,
+  //         games: newList,
+  //       };
+  //     });
+  //   }
+  // }, [data?.games]);
+
+  // gameData.games.map((game) => (
 
   return (
     <section className="mt-8 w-full">
       <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
-        {/* {GAMES_LIST.map((game) => ( */}
-        {gameData.games.map((game) => (
+        {GAMES_LIST.map((game) => (
           <div
             key={game.id}
             className="group relative flex flex-col overflow-hidden rounded-lg border border-slate-900 bg-slate-900"
           >
-            <div className="aspect-h-4 aspect-w-3 sm:aspect-none bg-gray-200 group-hover:opacity-75 sm:h-96">
+            <div className="aspect-h-4 aspect-w-3 sm:aspect-none bg-gray-500 duration-1000 ease-in group-hover:opacity-75 sm:h-96">
               <div className="relative h-72 w-full sm:h-full sm:w-full">
-                <Image
+                <GameImageLoader
+                  alt={game.name}
+                  className="object-cover object-center"
+                  src={game.backgroundImage}
+                />
+                {/* <Image
                   src={game.backgroundImage}
                   fill
                   alt={game.name}
@@ -186,7 +193,7 @@ export function Games() {
                   priority
                   quality={50}
                   className="object-cover object-center"
-                />
+                /> */}
               </div>
             </div>
 
@@ -249,7 +256,7 @@ export function Games() {
         ))}
       </div>
 
-      <div className="m-7 flex justify-center">
+      {/* <div className="m-7 flex justify-center">
         <Button
           onClick={() => setPage((oldPage) => oldPage + 1)}
           className="mb-5"
@@ -258,7 +265,7 @@ export function Games() {
         >
           Load more
         </Button>
-      </div>
+      </div> */}
     </section>
   );
 }
