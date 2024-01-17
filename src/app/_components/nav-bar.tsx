@@ -3,9 +3,15 @@
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-
+import Image, { type StaticImageData } from "next/image";
 import clsx from "clsx";
-import { Container } from "./container";
+import { Container } from "./ui/container";
+import { cva } from "class-variance-authority";
+import tailwindLogo from "/public/images/talwind-logo.svg";
+import avatar from "/public/images/avatar.avif";
+
+const tailwindLogoImage = tailwindLogo as StaticImageData;
+const avatarImage = avatar;
 
 const user = {
   name: "Tom Cook",
@@ -24,7 +30,23 @@ const userNavigation = [
   { name: "Sign out", href: "#" },
 ];
 
-const IS_LOGGED = false;
+const IS_LOGGED = true;
+
+const navBarButton = cva(
+  "inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold",
+  {
+    variants: {
+      intent: {
+        filled: "bg-amber-400 text-gray-900",
+        ghost: "text-white hover:bg-gray-700 hover:text-white",
+      },
+      hover: {
+        filled: "hover:bg-amber-300",
+        ghost: "hover:text-white",
+      },
+    },
+  },
+);
 
 export function NavBar() {
   return (
@@ -36,16 +58,15 @@ export function NavBar() {
               <div className="flex h-16 justify-between">
                 <div className="flex">
                   <div className="flex flex-shrink-0 items-center">
-                    <img
+                    <Image
+                      src={tailwindLogoImage}
+                      alt="Yout Company"
                       className="block h-8 w-auto lg:hidden"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                      alt="Your Company"
                     />
-
-                    <img
+                    <Image
+                      src={tailwindLogoImage}
+                      alt="Yout Company"
                       className="hidden h-8 w-auto lg:block"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                      alt="Your Company"
                     />
                   </div>
 
@@ -53,19 +74,18 @@ export function NavBar() {
                     <div className="hidden sm:flex sm:items-center">
                       <div className="ml-10 flex items-baseline space-x-4">
                         {navigation.map((item) => (
-                          <a
+                          <Disclosure.Button
+                            as="a"
                             key={item.name}
                             href={item.href}
-                            className={clsx(
-                              "inline-flex items-center rounded-md px-3 py-2 text-sm font-medium",
-                              item.current
-                                ? "bg-amber-400 text-gray-900"
-                                : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                            )}
                             aria-current={item.current ? "page" : undefined}
+                            className={navBarButton({
+                              hover: item.current ? "filled" : "ghost",
+                              intent: item.current ? "filled" : "ghost",
+                            })}
                           >
                             {item.name}
-                          </a>
+                          </Disclosure.Button>
                         ))}
                       </div>
                     </div>
@@ -79,10 +99,10 @@ export function NavBar() {
                         <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800">
                           <span className="absolute -inset-1.5"></span>
                           <span className="sr-only">Open user menu</span>
-                          <img
+                          <Image
+                            src={avatarImage}
+                            alt="User avatar"
                             className="h-8 w-8 rounded-full"
-                            src={user.imageUrl}
-                            alt=""
                           />
                         </Menu.Button>
                       </div>
@@ -100,7 +120,8 @@ export function NavBar() {
                           {userNavigation.map((item) => (
                             <Menu.Item key={item.name}>
                               {({ active }) => (
-                                <a
+                                <Disclosure.Button
+                                  as="a"
                                   href={item.href}
                                   className={clsx(
                                     "block px-4 py-2 text-sm text-gray-700",
@@ -108,7 +129,7 @@ export function NavBar() {
                                   )}
                                 >
                                   {item.name}
-                                </a>
+                                </Disclosure.Button>
                               )}
                             </Menu.Item>
                           ))}
@@ -117,24 +138,32 @@ export function NavBar() {
                     </Menu>
                   ) : (
                     <div className="flex flex-1 items-center justify-end gap-x-6">
-                      <a
+                      <Disclosure.Button
                         href="#"
-                        className="text-md inline-flex items-center rounded-md px-3 py-2 font-semibold leading-6 text-white hover:bg-gray-700 hover:text-white md:text-sm "
+                        as="a"
+                        className={navBarButton({
+                          hover: "ghost",
+                          intent: "ghost",
+                        })}
                       >
                         Log in
-                      </a>
-                      <a
+                      </Disclosure.Button>
+                      <Disclosure.Button
+                        as="a"
                         href="#"
-                        className="rounded-md bg-amber-400 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800"
+                        className={navBarButton({
+                          hover: "filled",
+                          intent: "filled",
+                        })}
                       >
                         Sign up
-                      </a>
+                      </Disclosure.Button>
                     </div>
                   )}
                 </div>
 
                 <div className="-mr-2 flex items-center sm:hidden">
-                  <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800">
+                  <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white">
                     <span className="absolute -inset-0.5" />
                     <span className="sr-only">Open main menu</span>
                     {open ? (
@@ -171,10 +200,10 @@ export function NavBar() {
                     <div className="border-t border-gray-700 pb-3 pt-4">
                       <div className="flex items-center px-4">
                         <div className="flex-shrink-0">
-                          <img
+                          <Image
+                            src={avatarImage}
+                            alt="User avatar"
                             className="h-10 w-10 rounded-full"
-                            src={user.imageUrl}
-                            alt=""
                           />
                         </div>
                         <div className="ml-3">

@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { cookies } from "next/headers";
 
 import { TRPCReactProvider } from "@/trpc/react";
-import { NavBar } from "./_components/ui/nav-bar";
+import { NavBar } from "./_components/nav-bar";
 
 const inter = Inter({
   subsets: ["latin"],
