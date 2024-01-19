@@ -2,15 +2,21 @@ import { env } from "process";
 import { type Game, type GameDTO } from "./models/game";
 import { getGamesMapper } from "./mapper";
 
-const getUrlWithParams = (path: string, page = "", params = "") => {
+type UrlParams = {
+  path: string;
+  page: string;
+  search: string;
+};
+
+const getUrlWithParams = ({ page, path, search }: UrlParams) => {
   let url = `${env.RAWG_API_URL}/${path}?key=${env.RAWG_API_KEY}`;
 
   if (!!page) {
     url += `&page=${page}`;
   }
 
-  if (!!params) {
-    url += `&${params}`;
+  if (!!search) {
+    url += `&search=${search}`;
   }
 
   return url;
@@ -29,9 +35,15 @@ export type GameData = {
   games: Game[];
 };
 
-const getGames = async (page: number) => {
+const getGames = async (page: number, search?: string) => {
   try {
-    const res = await fetch(getUrlWithParams("games", String(page)));
+    const res = await fetch(
+      getUrlWithParams({
+        page: String(page),
+        path: "games",
+        search: search ?? "",
+      }),
+    );
 
     if (res.status !== 200) {
       throw new Error(res.statusText);

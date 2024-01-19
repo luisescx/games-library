@@ -7,16 +7,20 @@ const convertGameDtoToGame = (game: GameDTO): Game => ({
   slug: game.slug,
   backgroundImage: game.background_image,
   released: game.released,
-  platforms: game.parent_platforms.map((data) => ({
-    id: data.platform.id,
-    name: data.platform.name,
-    slug: data.platform.slug,
-  })),
-  genres: game.genres.map((genre) => ({
-    id: genre.id,
-    name: genre.name,
-    slug: genre.slug,
-  })),
+  platforms: game.parent_platforms
+    ? game.parent_platforms.map((data) => ({
+        id: data.platform.id,
+        name: data.platform.name,
+        slug: data.platform.slug,
+      }))
+    : [],
+  genres: game.genres
+    ? game.genres.map((genre) => ({
+        id: genre.id,
+        name: genre.name,
+        slug: genre.slug,
+      }))
+    : [],
 });
 
 export const gamesListMapper = (data: GameDTO[]): Game[] => {

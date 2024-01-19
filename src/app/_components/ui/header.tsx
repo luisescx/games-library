@@ -1,12 +1,18 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import debounce from "lodash.debounce";
 
 type HeaderProps = {
   title: string;
+  onInput: (value: string) => void;
 };
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, onInput }: HeaderProps) {
+  const debounceOnInput = debounce((value: string) => {
+    onInput(value);
+  }, 300);
+
   return (
     <div className="border-b border-amber-400 bg-slate-800 pb-5 sm:flex sm:items-center sm:justify-between">
       <h3 className="text-base font-semibold leading-6 text-white">{title}</h3>
@@ -34,6 +40,7 @@ export function Header({ title }: HeaderProps) {
               id="mobile-search"
               className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:hidden"
               placeholder="Search"
+              onInput={(value) => debounceOnInput(value.currentTarget.value)}
             />
             <input
               type="text"
@@ -41,6 +48,7 @@ export function Header({ title }: HeaderProps) {
               id="desktop-search"
               className="hidden w-full rounded-md border-0 py-1.5 pl-10 text-sm leading-6 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-400 sm:block"
               placeholder="Search"
+              onInput={(value) => debounceOnInput(value.currentTarget.value)}
             />
           </div>
           {/* <button
