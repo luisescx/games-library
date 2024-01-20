@@ -2,7 +2,7 @@
 "use client";
 
 import { GamesList } from "./games-list";
-import { Header } from "./ui/header";
+import { GamesHeader } from "./games-header";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "@/trpc/react";
 import { type GameData } from "@/server/services/external-api/api";
@@ -51,7 +51,7 @@ export function Games() {
 
   return (
     <>
-      <Header title="Games" onInput={(value) => setSearch(value)} />
+      <GamesHeader title="Games" onInput={(value) => setSearch(value)} />
 
       <GamesList
         gameData={gameData}
