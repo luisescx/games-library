@@ -6,17 +6,33 @@ type UrlParams = {
   path: string;
   page: string;
   search: string;
+  genres: number[];
+  platforms: number[];
 };
 
-const getUrlWithParams = ({ page, path, search }: UrlParams) => {
+const getUrlWithParams = ({
+  page,
+  path,
+  search,
+  genres,
+  platforms,
+}: UrlParams) => {
   let url = `${env.RAWG_API_URL}/${path}?key=${env.RAWG_API_KEY}`;
 
-  if (!!page) {
-    url += `&page=${page}`;
+  if (genres.length > 0) {
+    url += `&genres=${genres.join(",")}`;
+  }
+
+  if (platforms.length > 0) {
+    url += `&platforms=${platforms.join(",")}`;
   }
 
   if (!!search) {
     url += `&search=${search}`;
+  }
+
+  if (!!page) {
+    url += `&page=${page}`;
   }
 
   return url;
@@ -35,13 +51,22 @@ export type GameData = {
   games: Game[];
 };
 
-const getGames = async (page: number, search?: string) => {
+type GetGamesProps = {
+  page: number;
+  search: string;
+  genres: number[];
+  platforms: number[];
+};
+
+const getGames = async ({ page, search, genres, platforms }: GetGamesProps) => {
   try {
     const res = await fetch(
       getUrlWithParams({
         page: String(page),
         path: "games",
         search: search ?? "",
+        genres: genres ?? [],
+        platforms: platforms ?? [],
       }),
     );
 

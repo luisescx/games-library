@@ -1,8 +1,7 @@
 "use client";
 
-import { formatDate, platformImages } from "@/utils";
+import { formatDate } from "@/utils/date";
 import { type Game } from "@/server/services/external-api/models/game";
-
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { GameImageLoader } from "./game-image-loader";
@@ -136,6 +135,18 @@ const GAMES_LIST = [
     ],
   },
 ] as Game[];
+
+type PlatformImageTypeTest = Record<string, string>;
+
+export const platformImages: PlatformImageTypeTest = {
+  android: "/images/platforms/android.svg",
+  ios: "/images/platforms/ios.svg",
+  nintendo: "/images/platforms/nintendo.svg",
+  pc: "/images/platforms/pc.svg",
+  playstation: "/images/platforms/playstation.svg",
+  xbox: "/images/platforms/xbox.svg",
+  others: "/images/platforms/others.svg",
+};
 
 type GamesListProps = {
   gameData: GameData;

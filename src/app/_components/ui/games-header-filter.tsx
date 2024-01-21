@@ -1,15 +1,18 @@
 "use client";
 
+import { type FilterProps } from "@/utils/games-filter";
+
 type GamesHeaderFilterProps = {
-  option: {
-    id: number;
-    name: string;
-    checked: boolean;
-  };
+  option: FilterProps;
   type: string;
+  onChange: (id: number) => void;
 };
 
-export function GamesHeaderFilter({ option, type }: GamesHeaderFilterProps) {
+export function GamesHeaderFilter({
+  option,
+  type,
+  onChange,
+}: GamesHeaderFilterProps) {
   return (
     <div key={option.id} className="flex items-center text-base sm:text-sm">
       <input
@@ -19,6 +22,7 @@ export function GamesHeaderFilter({ option, type }: GamesHeaderFilterProps) {
         type="checkbox"
         className="h-4 w-4 flex-shrink-0 rounded border-amber-400  text-indigo-600 focus:ring-indigo-500"
         defaultChecked={option.checked}
+        onChange={() => onChange(option.id)}
       />
       <label
         htmlFor={`${type}-${option.id}`}
