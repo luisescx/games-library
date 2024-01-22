@@ -11,11 +11,6 @@ type GamesFilterProps = {
 
 export const gamesFilter: GamesFilterProps = {
   platforms: [
-    // {
-    //   id: 0,
-    //   name: "All",
-    //   checked: false,
-    // },
     {
       id: 1,
       name: "PC",
@@ -38,11 +33,6 @@ export const gamesFilter: GamesFilterProps = {
     },
   ],
   genres: [
-    // {
-    //   id: 0,
-    //   name: "All",
-    //   checked: false,
-    // },
     {
       id: 4,
       name: "Action",

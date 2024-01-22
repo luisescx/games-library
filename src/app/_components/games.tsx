@@ -6,10 +6,12 @@ import { GamesHeader } from "./games-header";
 import { useCallback, useMemo, useReducer, useState } from "react";
 import { api } from "@/trpc/react";
 import { type GameData } from "@/server/services/external-api/api";
+import debounce from "lodash.debounce";
 
 export type FilterAction =
   | { type: "onCheckPlatforms"; payload: { id: number } }
-  | { type: "onCheckGenres"; payload: { id: number } };
+  | { type: "onCheckGenres"; payload: { id: number } }
+  | { type: "onClearFilters"; payload?: { id: number } };
 
 type FilterState = {
   platforms: number[];
@@ -46,6 +48,8 @@ function reducer(state: FilterState, action: FilterAction) {
       }
 
       return { ...state, genres: [...genres] };
+    case "onClearFilters":
+      return { genres: [], platforms: [] };
     default:
       return state;
   }
@@ -96,18 +100,27 @@ export function Games() {
     } as GameData;
   }, [data]);
 
+  const totalFiltersCount = useMemo(
+    () => gamesFilterState.genres.length + gamesFilterState.platforms.length,
+    [gamesFilterState.genres, gamesFilterState.platforms],
+  );
+
   const onSetPage = useCallback(
     async () => await fetchNextPage(),
     [fetchNextPage],
   );
 
+  const debounceOnInput = debounce((newFilter: FilterAction) => {
+    dispatch({ type: newFilter.type, payload: newFilter.payload! });
+  }, 300);
+
   return (
     <>
       <GamesHeader
+        totalFiltersCount={totalFiltersCount}
         onInput={(value) => setSearch(value)}
-        onChangeFilter={(newFilter) =>
-          dispatch({ type: newFilter.type, payload: newFilter.payload })
-        }
+        onChangeFilter={(newFilter) => debounceOnInput(newFilter)}
+        onClearFilters={() => dispatch({ type: "onClearFilters" })}
       />
       <GamesList
         gameData={gameData}

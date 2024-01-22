@@ -16,13 +16,16 @@ export function GamesHeaderFilter({
   return (
     <div key={option.id} className="flex items-center text-base sm:text-sm">
       <input
+        key={option.id}
         id={`${type}-${option.id}`}
         name={`${type}[]`}
-        defaultValue={option.name}
         type="checkbox"
         className="h-4 w-4 flex-shrink-0 rounded border-amber-400  text-indigo-600 focus:ring-indigo-500"
-        defaultChecked={option.checked}
-        onChange={() => onChange(option.id)}
+        checked={option.checked}
+        onChange={() => {
+          option.checked = !option.checked;
+          onChange(option.id);
+        }}
       />
       <label
         htmlFor={`${type}-${option.id}`}

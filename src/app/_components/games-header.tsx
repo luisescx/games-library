@@ -9,11 +9,18 @@ import { gamesFilter } from "@/utils/games-filter";
 import { type FilterAction } from "./games";
 
 type HeaderProps = {
+  totalFiltersCount: number;
   onInput: (value: string) => void;
   onChangeFilter: (action: FilterAction) => void;
+  onClearFilters: () => void;
 };
 
-export function GamesHeader({ onInput, onChangeFilter }: HeaderProps) {
+export function GamesHeader({
+  totalFiltersCount = 0,
+  onInput,
+  onChangeFilter,
+  onClearFilters,
+}: HeaderProps) {
   const debounceOnInput = debounce((value: string) => {
     onInput(value);
   }, 300);
@@ -33,11 +40,28 @@ export function GamesHeader({ onInput, onChangeFilter }: HeaderProps) {
                   className="mr-2 h-5 w-5 flex-none"
                   aria-hidden="true"
                 />
-                2 Filters
+                {`${totalFiltersCount} Filters`}
               </Disclosure.Button>
             </div>
             <div className="pl-6">
-              <button type="button" className="text-white hover:text-slate-400">
+              <button
+                type="button"
+                className="text-white hover:text-slate-400"
+                onClick={() => {
+                  gamesFilter.genres = gamesFilter.genres.map((genre) => ({
+                    ...genre,
+                    checked: false,
+                  }));
+                  gamesFilter.platforms = gamesFilter.platforms.map(
+                    (platform) => ({
+                      ...platform,
+                      checked: false,
+                    }),
+                  );
+
+                  onClearFilters();
+                }}
+              >
                 Clear all
               </button>
             </div>
