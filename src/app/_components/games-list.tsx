@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import Image from "next/image";
 import { GameImageLoader } from "./game-image-loader";
 import { type GameData } from "@/server/services/external-api/api";
+import { GameCardSkeleton } from "./ui/game-card-skeleton";
 
 const GAMES_LIST = [
   {
@@ -158,78 +159,86 @@ export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
   return (
     <section className="mt-8 w-full">
       <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
-        {gameData.games.map((game, index) => (
-          <div
-            key={`${game.id}-${index}`}
-            className="group relative flex flex-col overflow-hidden rounded-lg border border-slate-900 bg-slate-900"
-          >
-            <div className="aspect-h-4 aspect-w-3 sm:aspect-none bg-gray-500 duration-1000 ease-in group-hover:opacity-75 sm:h-96">
-              <div className="relative h-72 w-full sm:h-full sm:w-full">
-                <GameImageLoader
-                  alt={game.name}
-                  className="object-cover object-center"
-                  src={game.backgroundImage}
-                />
-              </div>
-            </div>
+        {isLoading && gameData.games.length === 0
+          ? Array.from({ length: 20 }, (_, index) => (
+              <GameCardSkeleton key={index} />
+            ))
+          : gameData.games.map((game, index) => (
+              <div
+                key={`${game.id}-${index}`}
+                className="group relative flex flex-col overflow-hidden rounded-lg border border-slate-900 bg-slate-900"
+              >
+                <div className="aspect-h-4 aspect-w-3 sm:aspect-none bg-gray-500 duration-1000 ease-in group-hover:opacity-75 sm:h-96">
+                  <div className="relative h-72 w-full sm:h-full sm:w-full">
+                    <GameImageLoader
+                      alt={game.name}
+                      className="object-cover object-center"
+                      src={game.backgroundImage}
+                    />
+                  </div>
+                </div>
 
-            <div className="flex flex-1 flex-col p-4">
-              <div className="flex flex-none space-x-4">
-                {game?.platforms.map(
-                  (platform) =>
-                    platformImages[platform.slug] && (
+                <div className="flex flex-1 flex-col p-4">
+                  <div className="flex flex-none space-x-4">
+                    {game?.platforms.map(
+                      (platform) =>
+                        platformImages[platform.slug] && (
+                          <Image
+                            key={platform.id}
+                            src={
+                              platformImages[platform.slug]
+                                ? platformImages[platform.slug]!
+                                : platformImages.others!
+                            }
+                            width={0}
+                            height={0}
+                            alt={platform.slug}
+                            className="h-4 w-4"
+                          />
+                        ),
+                    )}
+                    {game?.platforms.some(
+                      (platform) => !platformImages[platform.slug],
+                    ) && (
                       <Image
-                        key={platform.id}
-                        src={
-                          platformImages[platform.slug]
-                            ? platformImages[platform.slug]!
-                            : platformImages.others!
-                        }
+                        src={platformImages.others!}
+                        className="h-4 w-4"
                         width={0}
                         height={0}
-                        alt={platform.slug}
-                        className="h-4 w-4"
+                        alt="others"
                       />
-                    ),
-                )}
-                {game?.platforms.some(
-                  (platform) => !platformImages[platform.slug],
-                ) && (
-                  <Image
-                    src={platformImages.others!}
-                    className="h-4 w-4"
-                    width={0}
-                    height={0}
-                    alt="others"
-                  />
-                )}
-              </div>
+                    )}
+                  </div>
 
-              <h3 className="mt-2 text-lg font-medium text-amber-400">
-                <a href="#">
-                  <span aria-hidden="true" className="absolute inset-0" />
-                  {game.name}
-                </a>
-              </h3>
+                  <h3 className="mt-2 text-lg font-medium text-amber-400">
+                    <a href="#">
+                      <span aria-hidden="true" className="absolute inset-0" />
+                      {game.name}
+                    </a>
+                  </h3>
 
-              <div className="mt-2 flex items-center justify-between">
-                <p className="text-sm font-normal text-white">Release date</p>
-                <p className="flex-wrap text-sm font-normal text-white">
-                  {!!game.released ? formatDate(game.released) : "--"}
-                </p>
-              </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-sm font-normal text-white">
+                      Release date
+                    </p>
+                    <p className="flex-wrap text-sm font-normal text-white">
+                      {!!game.released ? formatDate(game.released) : "--"}
+                    </p>
+                  </div>
 
-              <div className="mt-1 flex items-center justify-between">
-                <p className="mr-2 text-sm font-normal text-white">Genres</p>
-                <p className="flex-wrap text-sm  font-normal text-white">
-                  {game.genres && game.genres.length > 0
-                    ? game.genres.map((genre) => genre.name).join(", ")
-                    : "--"}
-                </p>
+                  <div className="mt-1 flex items-center justify-between">
+                    <p className="mr-2 text-sm font-normal text-white">
+                      Genres
+                    </p>
+                    <p className="flex-wrap text-sm  font-normal text-white">
+                      {game.genres && game.genres.length > 0
+                        ? game.genres.map((genre) => genre.name).join(", ")
+                        : "--"}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            ))}
       </div>
 
       {!!gameData.next && (
