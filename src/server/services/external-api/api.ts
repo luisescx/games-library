@@ -24,7 +24,7 @@ const getUrlWithParams = ({
   }
 
   if (platforms.length > 0) {
-    url += `&platforms=${platforms.join(",")}`;
+    url += `&parent_platforms=${platforms.join(",")}`;
   }
 
   if (!!search) {

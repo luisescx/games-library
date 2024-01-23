@@ -155,15 +155,32 @@ type GamesListProps = {
   setPage: () => void;
 };
 
+type RenderSkeletonsProps = {
+  children: React.ReactNode;
+  isLoading: boolean;
+};
+
+function RenderSkeletons({ isLoading, children }: RenderSkeletonsProps) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
+        {Array.from({ length: 20 }, (_, index) => (
+          <GameCardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
 export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
   return (
     <section className="mt-8 w-full">
-      <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
-        {isLoading && gameData.games.length === 0
-          ? Array.from({ length: 20 }, (_, index) => (
-              <GameCardSkeleton key={index} />
-            ))
-          : gameData.games.map((game, index) => (
+      <RenderSkeletons isLoading={isLoading && gameData.games.length === 0}>
+        {gameData.games.length > 0 ? (
+          <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
+            {gameData.games.map((game, index) => (
               <div
                 key={`${game.id}-${index}`}
                 className="group relative flex flex-col overflow-hidden rounded-lg border border-slate-900 bg-slate-900"
@@ -239,9 +256,22 @@ export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
                 </div>
               </div>
             ))}
-      </div>
+          </div>
+        ) : (
+          <div className="mt-24 grid min-h-full place-items-center">
+            <div className="text-center">
+              <h1 className="mt-4 text-3xl font-bold tracking-tight text-amber-400 sm:text-5xl">
+                No games found
+              </h1>
+              <p className="mt-6 text-base leading-7 text-white">
+                Sorry, we couldn’t find any games.
+              </p>
+            </div>
+          </div>
+        )}
+      </RenderSkeletons>
 
-      {!!gameData.next && (
+      {gameData.games.length > 0 && gameData.next && (
         <div className="m-7 flex justify-center">
           <Button
             onClick={setPage}
