@@ -1,27 +1,29 @@
 import { type GameData, type ApiGamesResponseDTO } from "./api";
 import { type Game, type GameDTO } from "./models/game";
 
-const convertGameDtoToGame = (game: GameDTO): Game => ({
-  id: game.id,
-  name: game.name,
-  slug: game.slug,
-  backgroundImage: game.background_image,
-  released: game.released,
-  platforms: game.parent_platforms
-    ? game.parent_platforms.map((data) => ({
-        id: data.platform.id,
-        name: data.platform.name,
-        slug: data.platform.slug,
-      }))
-    : [],
-  genres: game.genres
-    ? game.genres.map((genre) => ({
-        id: genre.id,
-        name: genre.name,
-        slug: genre.slug,
-      }))
-    : [],
-});
+const convertGameDtoToGame = (game: GameDTO): Game => {
+  return {
+    id: game.id,
+    name: game.name,
+    slug: game.slug,
+    backgroundImage: game.background_image,
+    released: game.released,
+    platforms: game.parent_platforms
+      ? game.parent_platforms.map((data) => ({
+          id: data.platform.id,
+          name: data.platform.name,
+          slug: data.platform.slug,
+        }))
+      : [],
+    genres: game.genres
+      ? game.genres.map((genre) => ({
+          id: genre.id,
+          name: genre.name,
+          slug: genre.slug,
+        }))
+      : [],
+  } as Game;
+};
 
 export const gamesListMapper = (data: GameDTO[]): Game[] => {
   return data.map((game) => convertGameDtoToGame(game));

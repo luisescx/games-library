@@ -18,6 +18,7 @@ export type Game = {
   released: string;
   platforms: Platform[];
   genres: Genres[];
+  description: string;
 };
 
 export type GameDTO = {
@@ -30,4 +31,7 @@ export type GameDTO = {
     platform: Platform;
   }[];
   genres: Genres[];
+  description_raw: string;
+  background_image_additional: string;
+  website: string;
 };

@@ -86,6 +86,88 @@ const getGames = async ({ page, search, genres, platforms }: GetGamesProps) => {
   }
 };
 
+export type ApiGameResponseDto = GameDTO;
+
+const getGameDetails = async (slug: string) => {
+  try {
+    const res = await fetch(
+      `${env.RAWG_API_URL}/games/${slug}?key=${env.RAWG_API_KEY}`,
+    );
+
+    if (res.status !== 200) {
+      throw new Error(res.statusText);
+    }
+
+    const data = (await res.json()) as ApiGameResponseDto;
+
+    return data;
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new Error(e.message);
+    }
+
+    throw new Error("An error occurred, please try again.");
+  }
+};
+
+export type ApiGameScreenshotDto = {
+  results: {
+    id: string;
+    image: string;
+  }[];
+};
+
+const getGameScreenshots = async (slug: string) => {
+  try {
+    const res = await fetch(
+      `${env.RAWG_API_URL}/games/${slug}/screenshots?key=${env.RAWG_API_KEY}`,
+    );
+
+    if (res.status !== 200) {
+      throw new Error(res.statusText);
+    }
+
+    const data = (await res.json()) as ApiGameScreenshotDto;
+
+    return data;
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new Error(e.message);
+    }
+
+    throw new Error("An error occurred, please try again.");
+  }
+};
+
+export type ApiGameSeriesDto = {
+  results: Game[];
+};
+
+const getGameSeries = async (slug: string) => {
+  try {
+    const res = await fetch(
+      `${env.RAWG_API_URL}/games/${slug}/game-series?key=${env.RAWG_API_KEY}`,
+    );
+
+    if (res.status !== 200) {
+      throw new Error(res.statusText);
+    }
+
+    const data = (await res.json()) as ApiGameSeriesDto;
+
+    return data;
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new Error(e.message);
+    }
+
+    throw new Error("An error occurred, please try again.");
+  }
+};
+
 export const apiGames = {
   getGames,
+  getGameDetails,
+  getGameScreenshots,
+  getGameSeries,
 };
