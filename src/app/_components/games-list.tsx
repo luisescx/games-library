@@ -7,6 +7,7 @@ import Image from "next/image";
 import { GameImageLoader } from "./game-image-loader";
 import { type GameData } from "@/server/services/external-api/api";
 import { GameCardSkeleton } from "./ui/game-card-skeleton";
+import Link from "next/link";
 
 const GAMES_LIST = [
   {
@@ -228,10 +229,10 @@ export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
                   </div>
 
                   <h3 className="mt-2 text-lg font-medium text-amber-400">
-                    <a href="#">
+                    <Link href={`/game-details/${game.slug}`} scroll={false}>
                       <span aria-hidden="true" className="absolute inset-0" />
                       {game.name}
-                    </a>
+                    </Link>
                   </h3>
 
                   <div className="mt-2 flex items-center justify-between">
