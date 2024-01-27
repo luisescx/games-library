@@ -1,15 +1,22 @@
 import { type GameData, type ApiGamesResponseDTO } from "./api";
 import { type Game, type GameDTO } from "./models/game";
 
-const convertGameDtoToGame = (game: GameDTO): Game => {
+export const convertGameDtoToGame = (game: GameDTO): Game => {
   return {
     id: game.id,
     name: game.name,
     slug: game.slug,
     backgroundImage: game.background_image,
     released: game.released,
-    platforms: game.parent_platforms
+    parentPlatforms: game.parent_platforms
       ? game.parent_platforms.map((data) => ({
+          id: data.platform.id,
+          name: data.platform.name,
+          slug: data.platform.slug,
+        }))
+      : [],
+    platforms: game.platforms
+      ? game.platforms.map((data) => ({
           id: data.platform.id,
           name: data.platform.name,
           slug: data.platform.slug,
@@ -22,6 +29,22 @@ const convertGameDtoToGame = (game: GameDTO): Game => {
           slug: genre.slug,
         }))
       : [],
+    description: game.description,
+    developers: game.developers
+      ? game.developers.map((developer) => ({
+          id: developer.id,
+          name: developer.name,
+        }))
+      : [],
+    publishers: game.publishers
+      ? game.publishers.map((publisher) => ({
+          id: publisher.id,
+          name: publisher.name,
+        }))
+      : [],
+    website: game.website,
+    metacritic: game.metacritic,
+    metacriticUrl: game.metacritic_url ?? "--",
   } as Game;
 };
 

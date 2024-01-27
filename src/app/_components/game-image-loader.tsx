@@ -6,11 +6,17 @@ import { useState } from "react";
 
 type GameImageLoaderProps = {
   className: string;
+  loaderClassName?: string;
   src: string;
   alt: string;
 };
 
-export function GameImageLoader({ src, alt, className }: GameImageLoaderProps) {
+export function GameImageLoader({
+  src,
+  alt,
+  className,
+  loaderClassName = "",
+}: GameImageLoaderProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -34,7 +40,7 @@ export function GameImageLoader({ src, alt, className }: GameImageLoaderProps) {
         />
       )}
 
-      <div className="h-full w-full bg-slate-700" />
+      <div className={clsx("h-full w-full bg-slate-700", loaderClassName)} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { env } from "process";
 import { type Game, type GameDTO } from "./models/game";
-import { getGamesMapper } from "./mapper";
+import { convertGameDtoToGame, getGamesMapper } from "./mapper";
 
 type UrlParams = {
   path: string;
@@ -100,7 +100,7 @@ const getGameDetails = async (slug: string) => {
 
     const data = (await res.json()) as ApiGameResponseDto;
 
-    return data;
+    return convertGameDtoToGame(data);
   } catch (e) {
     if (e instanceof Error) {
       throw new Error(e.message);
