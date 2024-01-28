@@ -30,6 +30,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.7",
     "@types/eslint": "^8.44.7",
     "@types/node": "^18.17.0",
