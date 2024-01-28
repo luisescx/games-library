@@ -186,8 +186,8 @@ export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
                 key={`${game.id}-${index}`}
                 className="group relative flex flex-col overflow-hidden rounded-lg border border-slate-900 bg-slate-900"
               >
-                <div className="aspect-h-4 aspect-w-3 sm:aspect-none bg-gray-500 group-hover:opacity-75 sm:h-96">
-                  <div className="relative h-72 w-full sm:h-full sm:w-full">
+                <div className="aspect-h-3 aspect-w-3 sm:aspect-none bg-gray-500 group-hover:opacity-75 sm:h-96">
+                  <div className="h-full w-full sm:h-full sm:w-full">
                     <GameImageLoader
                       alt={game.name}
                       className="object-cover object-center"
