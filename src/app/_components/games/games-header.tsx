@@ -4,7 +4,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import debounce from "lodash.debounce";
 import { Disclosure, Transition } from "@headlessui/react";
 import { FunnelIcon } from "@heroicons/react/20/solid";
-import { GamesHeaderFilter } from "./ui/games-header-filter";
+import { GamesHeaderFilter } from "../ui/games-header-filter";
 import { gamesFilter } from "@/utils/games-filter";
 import { type FilterAction } from "./games";
 

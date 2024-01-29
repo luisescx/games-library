@@ -1,44 +1,11 @@
+import { Screenshots } from "@/app/_components/game-details/screenshots";
 import { GameImageLoader } from "@/app/_components/game-image-loader";
 import { Container } from "@/app/_components/ui/container";
 import { api } from "@/trpc/server";
 import { formatDate } from "@/utils/date";
-import {
-  CalendarDaysIcon,
-  CreditCardIcon,
-  UserCircleIcon,
-  LinkIcon,
-} from "@heroicons/react/24/outline";
+import { CalendarDaysIcon, LinkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import Image from "next/image";
-import { Suspense } from "react";
-
-async function Screenshots() {
-  const data = await api.game.getGameScreenshots.query({ slug: "diablo-iv" });
-
-  console.log("screenshots: ", data);
-
-  return data?.results ? (
-    data.results.map((result) => (
-      <div
-        className="aspect-h-4 aspect-w-3 sm:aspect-none bg-gray-500 sm:h-96"
-        key={result.id}
-      >
-        <div className="relative h-72 w-full sm:h-full sm:w-full">
-          <Image
-            alt={result.id}
-            src={result.image}
-            priority
-            quality={50}
-            fill
-            className="h-full w-full object-cover object-center"
-          />
-        </div>
-      </div>
-    ))
-  ) : (
-    <h1>Não encontrado</h1>
-  );
-}
+// import { Suspense } from "react";
 
 async function GameSeries() {
   const data = await api.game.getGameSeries.query({ slug: "the-witcher" });
@@ -66,14 +33,14 @@ export default async function Page({ params }: { params: { slug: string } }) {
           {game.name}
         </h1>
 
-        <div className="grid-col-1 mt-8 grid gap-4 md:grid-cols-[2fr_1fr] md:gap-x-6">
+        <div className="grid-col-1 mt-8 grid gap-4 gap-y-5 md:grid-cols-[2fr_1fr] md:gap-x-6">
           <div>
             <div
               dangerouslySetInnerHTML={{ __html: game.description ?? "" }}
               className="row-span-3 text-lg leading-8 text-white"
             />
 
-            <div className="mt-4 grid grid-cols-2 justify-center gap-x-4 gap-y-5 border-t border-slate-900 pt-4 lg:gap-y-8">
+            <div className="mt-5 grid grid-cols-2 justify-center gap-x-4 gap-y-5 border-t border-slate-900 pt-4 lg:gap-y-8">
               <div>
                 <h3 className="border-l-2 border-amber-400 pl-2 text-lg font-medium text-white">
                   Genres
@@ -123,9 +90,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </div>
           </div>
 
-          <div>
-            <div className="aspect-h-4 aspect-w-3 sm:aspect-none rounded-lg bg-gray-500 sm:h-[32rem]">
-              <div className="relative h-72 w-full sm:h-full sm:w-full">
+          <div className="order-first md:order-last md:mb-0">
+            <div className="aspect-h-4 aspect-w-3 rounded-lg bg-gray-500 sm:aspect-none sm:h-[32rem]">
+              <div className="h-full w-full sm:h-full sm:w-full">
                 <GameImageLoader
                   className="rounded-lg object-cover object-center"
                   alt={game.name}
@@ -142,27 +109,34 @@ export default async function Page({ params }: { params: { slug: string } }) {
                     <dt className="text-sm font-semibold leading-6 text-white">
                       Metacritic Score
                     </dt>
-                    <dd
-                      className={clsx(
-                        "inline-flex items-center rounded-md px-3 py-1 text-base font-medium text-white",
-                        {
-                          "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20":
-                            game.metacritic && game.metacritic >= 80,
-                        },
-                        {
-                          "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20":
-                            game.metacritic && game.metacritic < 50,
-                        },
-                        {
-                          "bg-yellow-400 text-amber-800 ring-1 ring-inset ring-yellow-600/20":
-                            game.metacritic &&
-                            game.metacritic >= 50 &&
-                            game.metacritic < 80,
-                        },
-                      )}
-                    >
-                      {game.metacritic ?? "--"}
-                    </dd>
+                    {game.metacritic !== null &&
+                    game.metacritic !== undefined ? (
+                      <dd
+                        className={clsx(
+                          "inline-flex items-center rounded-md px-3 py-1 text-base font-medium",
+                          {
+                            "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20":
+                              game.metacritic && game.metacritic >= 80,
+                          },
+                          {
+                            "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20":
+                              game.metacritic && game.metacritic < 50,
+                          },
+                          {
+                            "bg-yellow-400 text-amber-800 ring-1 ring-inset ring-yellow-600/20":
+                              game.metacritic &&
+                              game.metacritic >= 50 &&
+                              game.metacritic < 80,
+                          },
+                        )}
+                      >
+                        {game.metacritic}
+                      </dd>
+                    ) : (
+                      <dd className="inline-flex items-center rounded-md px-3 py-1 text-base font-medium text-white">
+                        {game.metacritic ?? "--"}
+                      </dd>
+                    )}
                   </div>
                   {!!game.metacriticUrl && (
                     <div className="flex w-full flex-none items-center gap-x-4 border-white px-6 pb-6">
@@ -222,6 +196,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </div>
           </div>
         </div>
+
+        <Screenshots slug={params.slug} />
       </Container>
     </main>
   );

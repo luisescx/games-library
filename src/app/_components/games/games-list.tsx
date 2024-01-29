@@ -1,142 +1,12 @@
 "use client";
 
 import { formatDate } from "@/utils/date";
-import { type Game } from "@/server/services/external-api/models/game";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import Image from "next/image";
-import { GameImageLoader } from "./game-image-loader";
+import { GameImageLoader } from "../game-image-loader";
 import { type GameData } from "@/server/services/external-api/api";
-import { GameCardSkeleton } from "./ui/game-card-skeleton";
+import { GameCardSkeleton } from "../ui/game-card-skeleton";
 import Link from "next/link";
-
-const GAMES_LIST = [
-  {
-    id: 1,
-    backgroundImage:
-      "https://media.rawg.io/media/games/20a/20aa03a10cda45239fe22d035c0ebe64.jpg",
-    name: "Grand Theft Auto V",
-    platforms: [
-      {
-        id: 1,
-        name: "PC",
-        slug: "pc",
-      },
-      {
-        id: 2,
-        name: "PlayStation",
-        slug: "playstation",
-      },
-      {
-        id: 3,
-        name: "Xbox",
-        slug: "xbox",
-      },
-    ],
-    released: "2013-09-17",
-    slug: "grand-theft-auto-v",
-    genres: [
-      {
-        id: 1,
-        name: "Action",
-        slug: "action",
-      },
-      {
-        id: 2,
-        name: "RPG",
-        slug: "rpg",
-      },
-      {
-        id: 3,
-        name: "Adventure",
-        slug: "adventure",
-      },
-    ],
-  },
-  {
-    id: 2,
-    backgroundImage:
-      "https://media.rawg.io/media/games/20a/20aa03a10cda45239fe22d035c0ebe64.jpg",
-    name: "Grand Theft Auto V",
-    platforms: [
-      {
-        id: 1,
-        name: "PC",
-        slug: "pc",
-      },
-      {
-        id: 2,
-        name: "PlayStation",
-        slug: "playstation",
-      },
-      {
-        id: 3,
-        name: "Xbox",
-        slug: "xbox",
-      },
-    ],
-    released: "2013-09-17",
-    slug: "grand-theft-auto-v",
-    genres: [
-      {
-        id: 1,
-        name: "Action",
-        slug: "action",
-      },
-      {
-        id: 2,
-        name: "RPG",
-        slug: "rpg",
-      },
-      {
-        id: 3,
-        name: "Adventure",
-        slug: "adventure",
-      },
-    ],
-  },
-  {
-    id: 3,
-    backgroundImage:
-      "https://media.rawg.io/media/games/20a/20aa03a10cda45239fe22d035c0ebe64.jpg",
-    name: "Grand Theft Auto V",
-    platforms: [
-      {
-        id: 1,
-        name: "PC",
-        slug: "pc",
-      },
-      {
-        id: 2,
-        name: "PlayStation",
-        slug: "playstation",
-      },
-      {
-        id: 3,
-        name: "Xbox",
-        slug: "xbox",
-      },
-    ],
-    released: "2013-09-17",
-    slug: "grand-theft-auto-v",
-    genres: [
-      {
-        id: 1,
-        name: "Action",
-        slug: "action",
-      },
-      {
-        id: 2,
-        name: "RPG",
-        slug: "rpg",
-      },
-      {
-        id: 3,
-        name: "Adventure",
-        slug: "adventure",
-      },
-    ],
-  },
-] as Game[];
 
 type PlatformImageTypeTest = Record<string, string>;
 
@@ -186,7 +56,7 @@ export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
                 key={`${game.id}-${index}`}
                 className="group relative flex flex-col overflow-hidden rounded-lg border border-slate-900 bg-slate-900"
               >
-                <div className="aspect-h-3 aspect-w-3 sm:aspect-none bg-gray-500 group-hover:opacity-75 sm:h-96">
+                <div className="aspect-h-3 aspect-w-3 bg-gray-500 sm:aspect-none group-hover:opacity-75 sm:h-96">
                   <div className="h-full w-full sm:h-full sm:w-full">
                     <GameImageLoader
                       alt={game.name}
@@ -229,7 +99,7 @@ export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
                   </div>
 
                   <h3 className="mt-2 text-lg font-medium text-amber-400">
-                    <Link href={`/game-details/${game.slug}`} scroll={false}>
+                    <Link href={`/game-details/${game.slug}`}>
                       <span aria-hidden="true" className="absolute inset-0" />
                       {game.name}
                     </Link>

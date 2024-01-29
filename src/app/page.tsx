@@ -1,4 +1,4 @@
-import { Games } from "./_components/games";
+import { Games } from "./_components/games/games";
 import { Container } from "./_components/ui/container";
 
 export default async function Home() {
