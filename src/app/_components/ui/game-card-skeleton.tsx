@@ -2,8 +2,8 @@ export function GameCardSkeleton() {
   return (
     <div className="animate-pulse">
       <div className="group relative flex flex-col overflow-hidden rounded-lg border border-slate-900 bg-slate-900">
-        <div className="aspect-h-4 aspect-w-3 sm:aspect-none bg-gray-500 duration-1000 ease-in group-hover:opacity-75 sm:h-96">
-          <div className="relative h-72 w-full sm:h-full sm:w-full"></div>
+        <div className="aspect-h-3 aspect-w-3 bg-gray-500 duration-1000 ease-in sm:aspect-none group-hover:opacity-75 sm:h-96">
+          <div className="h-full w-full sm:h-full sm:w-full"></div>
         </div>
 
         <div className="flex flex-1 flex-col p-4">

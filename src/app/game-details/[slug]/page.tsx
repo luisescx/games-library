@@ -5,7 +5,6 @@ import { api } from "@/trpc/server";
 import { formatDate } from "@/utils/date";
 import { CalendarDaysIcon, LinkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-// import { Suspense } from "react";
 
 async function GameSeries() {
   const data = await api.game.getGameSeries.query({ slug: "the-witcher" });
