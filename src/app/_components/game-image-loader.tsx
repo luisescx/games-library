@@ -9,6 +9,8 @@ type GameImageLoaderProps = {
   loaderClassName?: string;
   src: string;
   alt: string;
+  quality?: number;
+  defaultLoaderBg?: boolean;
 };
 
 export function GameImageLoader({
@@ -16,6 +18,8 @@ export function GameImageLoader({
   alt,
   className,
   loaderClassName = "",
+  quality = 50,
+  defaultLoaderBg = true,
 }: GameImageLoaderProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -30,7 +34,7 @@ export function GameImageLoader({
           alt={alt}
           sizes="100vw, 100vh"
           priority
-          quality={50}
+          quality={quality}
           className={clsx(
             className,
             { "opacity-100 transition-opacity duration-700": isLoaded },
@@ -40,7 +44,13 @@ export function GameImageLoader({
         />
       )}
 
-      <div className={clsx("h-full w-full bg-slate-700", loaderClassName)} />
+      <div
+        className={clsx(
+          "h-full w-full",
+          { "bg-slate-700": !!defaultLoaderBg },
+          loaderClassName,
+        )}
+      />
     </div>
   );
 }
