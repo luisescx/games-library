@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { api } from "@/trpc/react";
@@ -11,7 +12,6 @@ import {
   ChevronRightIcon,
   ChevronLeftIcon,
 } from "@heroicons/react/24/outline";
-import Image from "next/image";
 
 type ScreenshotsProps = {
   slug: string;
@@ -183,7 +183,7 @@ export function Screenshots({ slug }: ScreenshotsProps) {
                   leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                   <div className="fixed inset-0 flex w-screen items-center justify-center sm:p-9">
-                    <Dialog.Panel className="relative w-full max-w-[95%] transform overflow-hidden rounded-lg bg-slate-900 px-4 pb-4 pt-5 text-left align-middle shadow-xl transition-all sm:my-8 sm:max-w-[80%] sm:p-6 md:p-8">
+                    <Dialog.Panel className="2xl:h-max[80%] relative w-full max-w-[95%] transform overflow-hidden rounded-lg bg-slate-900 px-4 pb-4 pt-5 text-left align-middle shadow-xl transition-all sm:my-8 sm:max-w-[80%] sm:p-6 md:p-8 2xl:h-[80%] 2xl:max-w-[70%]">
                       <div
                         className="absolute right-1 top-1 sm:right-3 sm:top-3"
                         role="button"
@@ -197,11 +197,8 @@ export function Screenshots({ slug }: ScreenshotsProps) {
                         </div>
                       </div>
 
-                      <div
-                        key={allScreenshots[0]!.id}
-                        className="aspect-h-1 aspect-w-2 mt-6 rounded-lg"
-                      >
-                        <div className="h-full w-full">
+                      <div className="aspect-h-1 aspect-w-2 relative mt-6 rounded-lg 2xl:aspect-none 2xl:h-full 2xl:max-h-full 2xl:pb-[1.5rem]">
+                        <div className="h-full w-full 2xl:relative 2xl:h-full">
                           <button
                             className={clsx(
                               "absolute left-4 top-[45%] z-50 rounded-full bg-slate-900 bg-opacity-75 p-2 hover:bg-opacity-100",
@@ -226,15 +223,40 @@ export function Screenshots({ slug }: ScreenshotsProps) {
                             />
                           </button>
 
-                          <Image
+                          {/* <Image
                             src={allScreenshots[selectedImageIndex]!.image}
                             alt={allScreenshots[selectedImageIndex]!.id}
                             fill
                             sizes="100vw, 100vh"
                             priority
                             quality={90}
-                            className="rounded-lg bg-gray-500 object-cover object-center"
-                          />
+                            className="rounded-lg bg-gray-500 object-center"
+                          /> */}
+
+                          <div className="relative h-full w-full">
+                            <div className="h-full w-full overflow-hidden">
+                              <div
+                                className="flex h-full w-full transition duration-200 ease-out"
+                                style={{
+                                  transform: `translateX(-${selectedImageIndex * 100}%)`,
+                                }}
+                              >
+                                {allScreenshots.map((screenshot) => (
+                                  <div
+                                    className="min-w-0 shrink-0 grow-0 basis-full"
+                                    key={screenshot.id}
+                                  >
+                                    <img
+                                      alt={screenshot.id}
+                                      key={screenshot.id}
+                                      src={screenshot.image}
+                                      className="h-full w-full rounded-lg bg-gray-500 object-cover object-center"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
 
                           <button
                             className={clsx(
