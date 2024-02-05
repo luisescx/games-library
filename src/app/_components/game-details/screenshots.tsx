@@ -50,7 +50,7 @@ export function Screenshots({ slug }: ScreenshotsProps) {
   if (data?.results && data.results.length > 0) {
     return (
       <>
-        <div className="mt-14">
+        <section className="mt-14">
           <div
             className={clsx("grid grid-cols-1", {
               "sm:grid-cols-2 sm:gap-x-8": screenshots.length > 1,
@@ -148,7 +148,7 @@ export function Screenshots({ slug }: ScreenshotsProps) {
               </Fragment>
             ))}
           </div>
-        </div>
+        </section>
 
         <Carousel
           allScreenshots={allScreenshots}

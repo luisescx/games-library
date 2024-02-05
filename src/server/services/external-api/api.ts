@@ -153,9 +153,9 @@ const getGameSeries = async (slug: string) => {
       throw new Error(res.statusText);
     }
 
-    const data = (await res.json()) as ApiGameSeriesDto;
+    const data = (await res.json()) as ApiGamesResponseDTO;
 
-    return data;
+    return getGamesMapper(data);
   } catch (e) {
     if (e instanceof Error) {
       throw new Error(e.message);

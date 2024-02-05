@@ -1,3 +1,4 @@
+import { GameSeries } from "@/app/_components/game-details/game-series";
 import { Screenshots } from "@/app/_components/game-details/screenshots";
 import { GameImageLoader } from "@/app/_components/game-image-loader";
 import { Container } from "@/app/_components/ui/container";
@@ -5,22 +6,6 @@ import { api } from "@/trpc/server";
 import { formatDate } from "@/utils/date";
 import { CalendarDaysIcon, LinkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-
-async function GameSeries() {
-  const data = await api.game.getGameSeries.query({ slug: "the-witcher" });
-
-  console.log("game series: ", data);
-
-  return data?.results ? (
-    data.results.map((result) => (
-      <h1 className="text-white" key={result.id}>
-        {result.name}
-      </h1>
-    ))
-  ) : (
-    <h1>Não encontrado</h1>
-  );
-}
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const game = await api.game.getGameDetails.query({ slug: params.slug });
@@ -32,7 +17,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           {game.name}
         </h1>
 
-        <div className="grid-col-1 mt-8 grid gap-4 gap-y-5 md:grid-cols-[2fr_1fr] md:gap-x-6">
+        <section className="grid-col-1 mt-8 grid gap-4 gap-y-5 md:grid-cols-[2fr_1fr] md:gap-x-6">
           <div>
             <div
               dangerouslySetInnerHTML={{ __html: game.description ?? "" }}
@@ -180,23 +165,30 @@ export default async function Page({ params }: { params: { slug: string } }) {
                         aria-hidden="true"
                       />
                     </dt>
-                    <dd className="text-sm leading-6 text-white underline">
-                      <a
-                        href={game.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {game.website}
-                      </a>
+                    <dd className="text-sm leading-6 text-white">
+                      {!!game.website ? (
+                        <a
+                          href={game.website}
+                          target="_blank"
+                          className="underline"
+                          rel="noopener noreferrer"
+                        >
+                          {game.website ?? "--"}
+                        </a>
+                      ) : (
+                        <div>--</div>
+                      )}
                     </dd>
                   </div>
                 </dl>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         <Screenshots slug={params.slug} />
+
+        <GameSeries slug={params.slug} />
       </Container>
     </main>
   );
