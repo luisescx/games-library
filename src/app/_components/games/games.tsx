@@ -7,6 +7,7 @@ import { useCallback, useMemo, useReducer, useState } from "react";
 import { api } from "@/trpc/react";
 import { type GameData } from "@/server/services/external-api/api";
 import debounce from "lodash.debounce";
+import { Toast } from "../ui/toast";
 
 export type FilterAction =
   | { type: "onCheckPlatforms"; payload: { id: number } }
@@ -62,7 +63,7 @@ export function Games() {
     genres: [],
   });
 
-  const { data, fetchNextPage, isFetching } =
+  const { data, fetchNextPage, isFetching, error, isError } =
     api.game.getGames.useInfiniteQuery(
       {
         search,
@@ -127,6 +128,15 @@ export function Games() {
         setPage={onSetPage}
         isLoading={isFetching}
       />
+
+      {!!error && (
+        <Toast
+          type="error"
+          title="Error"
+          message={`${error.data?.httpStatus} - ${error.message}`}
+          autoHide
+        />
+      )}
     </>
   );
 }

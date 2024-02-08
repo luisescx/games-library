@@ -13,8 +13,6 @@ type GameSeriesProps = {
 export function GameSeries({ slug }: GameSeriesProps) {
   const { data, isLoading } = api.game.getGameSeries.useQuery({ slug });
 
-  const teste = [];
-
   return (
     <section className="mt-8 w-full sm:mt-12">
       <h5 className="mb-5 border-l-2 border-amber-400 pl-2 text-xl font-bold tracking-tight text-amber-400 sm:text-lg">

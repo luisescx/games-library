@@ -62,6 +62,7 @@ export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
                       alt={game.name}
                       className="object-cover object-center"
                       src={game.backgroundImage}
+                      quality={75}
                     />
                   </div>
                 </div>
@@ -143,13 +144,8 @@ export function GamesList({ gameData, isLoading, setPage }: GamesListProps) {
       </RenderSkeletons>
 
       {gameData.games.length > 0 && gameData.next && (
-        <div className="m-7 flex justify-center">
-          <Button
-            onClick={setPage}
-            className="mb-5"
-            disabled={isLoading}
-            isLoading={isLoading}
-          >
+        <div className="m-7 mb-0 flex justify-center sm:mb-2">
+          <Button onClick={setPage} disabled={isLoading} isLoading={isLoading}>
             Load more
           </Button>
         </div>

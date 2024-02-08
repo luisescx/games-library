@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { api } from "@/trpc/react";
@@ -6,12 +5,6 @@ import clsx from "clsx";
 import { Fragment, useCallback, useState } from "react";
 import { ScreenshotImageSkeleton } from "./screenshot-image-skeleton";
 import { GameImageLoader } from "../game-image-loader";
-import { Dialog, Transition } from "@headlessui/react";
-import {
-  XMarkIcon,
-  ChevronRightIcon,
-  ChevronLeftIcon,
-} from "@heroicons/react/24/outline";
 import { Carousel } from "./carousel";
 
 type ScreenshotsProps = {
