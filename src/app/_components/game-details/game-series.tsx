@@ -11,7 +11,12 @@ type GameSeriesProps = {
 };
 
 export function GameSeries({ slug }: GameSeriesProps) {
-  const { data, isLoading } = api.game.getGameSeries.useQuery({ slug });
+  const { data, isLoading } = api.game.getGameSeries.useQuery(
+    { slug },
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   return (
     <section className="mt-8 w-full sm:mt-12">

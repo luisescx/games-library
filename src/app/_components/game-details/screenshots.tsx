@@ -25,7 +25,12 @@ export function Screenshots({ slug }: ScreenshotsProps) {
   const [showScreenshotModal, setScreenshotModal] = useState(false);
   const [selectedImageIndex, setSelectedIndex] = useState(0);
 
-  const { data, isLoading } = api.game.getGameScreenshots.useQuery({ slug });
+  const { data, isLoading } = api.game.getGameScreenshots.useQuery(
+    { slug },
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const screenshots = data?.results ? data.results.slice(0, 3) : [];
   const allScreenshots = data?.results ? data.results : [];
