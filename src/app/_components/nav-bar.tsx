@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image, { type StaticImageData } from "next/image";
@@ -9,6 +9,7 @@ import { Container } from "./ui/container";
 import { cva } from "class-variance-authority";
 import tailwindLogo from "/public/images/talwind-logo.svg";
 import avatar from "/public/images/avatar.avif";
+import LogIn from "./nav-bar/log-in";
 
 const tailwindLogoImage = tailwindLogo as StaticImageData;
 const avatarImage = avatar;
@@ -30,7 +31,7 @@ const userNavigation = [
   { name: "Sign out", href: "#" },
 ];
 
-const IS_LOGGED = true;
+const IS_LOGGED = false;
 
 const navBarButton = cva(
   "inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold",
@@ -49,6 +50,8 @@ const navBarButton = cva(
 );
 
 export function NavBar() {
+  const [openLogIn, setOpenLogIn] = useState(false);
+
   return (
     <header>
       <>
@@ -139,8 +142,7 @@ export function NavBar() {
                   ) : (
                     <div className="flex flex-1 items-center justify-end gap-x-6">
                       <Disclosure.Button
-                        href="#"
-                        as="a"
+                        onClick={() => setOpenLogIn(true)}
                         className={navBarButton({
                           hover: "ghost",
                           intent: "ghost",
@@ -149,8 +151,7 @@ export function NavBar() {
                         Log in
                       </Disclosure.Button>
                       <Disclosure.Button
-                        as="a"
-                        href="#"
+                        onClick={() => setOpenLogIn(true)}
                         className={navBarButton({
                           hover: "filled",
                           intent: "filled",
@@ -232,16 +233,14 @@ export function NavBar() {
                 ) : (
                   <div className="space-y-1 pb-3 pt-2">
                     <Disclosure.Button
-                      as="a"
-                      href="#"
+                      onClick={() => setOpenLogIn(true)}
                       className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-amber-400 hover:text-gray-900"
                     >
                       Log in
                     </Disclosure.Button>
 
                     <Disclosure.Button
-                      as="a"
-                      href="#"
+                      onClick={() => setOpenLogIn(true)}
                       className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-amber-400 hover:text-gray-900"
                     >
                       Sign up
@@ -252,6 +251,10 @@ export function NavBar() {
             </Container>
           )}
         </Disclosure>
+
+        {!IS_LOGGED && (
+          <LogIn isOpen={openLogIn} onCloseModal={() => setOpenLogIn(false)} />
+        )}
       </>
     </header>
   );
