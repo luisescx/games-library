@@ -10,6 +10,7 @@ import { cva } from "class-variance-authority";
 import tailwindLogo from "/public/images/talwind-logo.svg";
 import avatar from "/public/images/avatar.avif";
 import LogIn from "./nav-bar/log-in";
+import SignUp from "./nav-bar/sign-up";
 
 const tailwindLogoImage = tailwindLogo as StaticImageData;
 const avatarImage = avatar;
@@ -51,6 +52,7 @@ const navBarButton = cva(
 
 export function NavBar() {
   const [openLogIn, setOpenLogIn] = useState(false);
+  const [openSignUp, setOpenSignUp] = useState(false);
 
   return (
     <header>
@@ -151,7 +153,7 @@ export function NavBar() {
                         Log in
                       </Disclosure.Button>
                       <Disclosure.Button
-                        onClick={() => setOpenLogIn(true)}
+                        onClick={() => setOpenSignUp(true)}
                         className={navBarButton({
                           hover: "filled",
                           intent: "filled",
@@ -240,7 +242,7 @@ export function NavBar() {
                     </Disclosure.Button>
 
                     <Disclosure.Button
-                      onClick={() => setOpenLogIn(true)}
+                      onClick={() => setOpenSignUp(true)}
                       className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-amber-400 hover:text-gray-900"
                     >
                       Sign up
@@ -253,7 +255,16 @@ export function NavBar() {
         </Disclosure>
 
         {!IS_LOGGED && (
-          <LogIn isOpen={openLogIn} onCloseModal={() => setOpenLogIn(false)} />
+          <>
+            <LogIn
+              isOpen={openLogIn}
+              onCloseModal={() => setOpenLogIn(false)}
+            />
+            <SignUp
+              isOpen={openSignUp}
+              onCloseModal={() => setOpenSignUp(false)}
+            />
+          </>
         )}
       </>
     </header>
