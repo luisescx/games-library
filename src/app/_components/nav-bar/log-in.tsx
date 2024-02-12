@@ -1,8 +1,8 @@
 "use client";
 
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Fragment, useEffect, useState } from "react";
+import { EyeIcon, XMarkIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 type LogInProps = {
   isOpen: boolean;
@@ -10,6 +10,14 @@ type LogInProps = {
 };
 
 export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      setShowPassword(false);
+    };
+  }, [isOpen]);
+
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onCloseModal}>
@@ -87,15 +95,32 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                       >
                         Password
                       </label>
-                      <div className="mt-2">
+                      <div className="relative mt-2 flex">
                         <input
                           id="password"
                           name="password"
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           autoComplete="current-password"
                           required
-                          className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:text-sm sm:leading-6"
+                          className="block w-full rounded-md border-0 py-1.5 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:text-sm sm:leading-6"
                         />
+
+                        <div
+                          className="absolute right-3 top-[20%]"
+                          role="button"
+                          onClick={() =>
+                            setShowPassword((oldValue) => !oldValue)
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeSlashIcon
+                              className="h-6 w-6"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <EyeIcon className="h-6 w-6" aria-hidden="true" />
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -132,6 +157,15 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                       >
                         Sign in
                       </button>
+                    </div>
+
+                    <div className="flex w-full justify-center text-sm leading-6">
+                      <a
+                        href="#"
+                        className="font-semibold text-amber-400 hover:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-4 focus:ring-offset-slate-900"
+                      >
+                        Dont&apos;t have an account? Sign up
+                      </a>
                     </div>
                   </form>
 
