@@ -10,6 +10,8 @@ import { type FilterAction } from "./games";
 
 type HeaderProps = {
   totalFiltersCount: number;
+  inputValue: string;
+  gamesFilterState: { platforms: number[]; genres: number[] };
   onInput: (value: string) => void;
   onChangeFilter: (action: FilterAction) => void;
   onClearFilters: () => void;
@@ -17,6 +19,8 @@ type HeaderProps = {
 
 export function GamesHeader({
   totalFiltersCount = 0,
+  inputValue,
+  gamesFilterState,
   onInput,
   onChangeFilter,
   onClearFilters,
@@ -90,6 +94,7 @@ export function GamesHeader({
                   id="mobile-search"
                   className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:hidden"
                   placeholder="Search"
+                  defaultValue={inputValue}
                   onInput={(value) =>
                     debounceOnInput(value.currentTarget.value)
                   }
@@ -100,6 +105,7 @@ export function GamesHeader({
                   id="desktop-search"
                   className="hidden w-full rounded-md border-0 py-1.5 pl-10 text-sm leading-6 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-400 sm:block"
                   placeholder="Search"
+                  defaultValue={inputValue}
                   onInput={(value) =>
                     debounceOnInput(value.currentTarget.value)
                   }
@@ -127,7 +133,12 @@ export function GamesHeader({
                   {gamesFilter.platforms.map((option) => (
                     <GamesHeaderFilter
                       key={option.id}
-                      option={option}
+                      option={{
+                        ...option,
+                        checked: gamesFilterState.platforms.some(
+                          (platformId) => platformId === option.id,
+                        ),
+                      }}
                       type="platform"
                       onChange={(id) =>
                         onChangeFilter({
@@ -148,7 +159,12 @@ export function GamesHeader({
                   {gamesFilter.genres.map((option) => (
                     <GamesHeaderFilter
                       key={option.id}
-                      option={option}
+                      option={{
+                        ...option,
+                        checked: gamesFilterState.genres.some(
+                          (genreId) => genreId === option.id,
+                        ),
+                      }}
                       type="genre"
                       onChange={(id) =>
                         onChangeFilter({
