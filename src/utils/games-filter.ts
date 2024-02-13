@@ -130,3 +130,24 @@ export const gamesFilter: GamesFilterProps = {
     },
   ],
 };
+
+export const constructSearchParameters = (
+  filterItems: { id: number; name: string }[],
+  filterStateIds: number[],
+  paramName: string,
+) => {
+  const filteredItems = filterItems
+    .filter((item) => filterStateIds.includes(item.id))
+    .map((item) => item.name)
+    .join(",");
+
+  return filteredItems ? `${paramName}${filteredItems}` : "";
+};
+
+export const getListParams = (
+  filterItems: { id: number; name: string }[],
+  params: string,
+) =>
+  filterItems
+    .filter((genre) => params.includes(genre.name))
+    .map((genre) => genre.id);
