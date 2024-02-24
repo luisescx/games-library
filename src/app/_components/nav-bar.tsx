@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Fragment, useState } from "react";
@@ -8,33 +9,18 @@ import clsx from "clsx";
 import { Container } from "./ui/container";
 import { cva } from "class-variance-authority";
 import tailwindLogo from "/public/images/talwind-logo.svg";
-import avatar from "/public/images/avatar.avif";
 import LogIn from "./nav-bar/log-in";
 import SignUp from "./nav-bar/sign-up";
-import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { type Session } from "next-auth";
+import { signOut } from "next-auth/react";
 
 const tailwindLogoImage = tailwindLogo as StaticImageData;
-const avatarImage = avatar;
-
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
+const avatarImage = "images/avatar.avif";
 
 const navigation = [
   { name: "Games", href: "#", current: true },
   { name: "My Games", href: "#", current: false },
 ];
-
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Sign out", href: "#" },
-];
-
-const IS_LOGGED = false;
 
 const navBarButton = cva(
   "inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold",
@@ -52,7 +38,11 @@ const navBarButton = cva(
   },
 );
 
-export function NavBar() {
+type NavBarProps = {
+  session: Session | null;
+};
+
+export function NavBar({ session }: NavBarProps) {
   const [openLogIn, setOpenLogIn] = useState(false);
   const [openSignUp, setOpenSignUp] = useState(false);
 
@@ -77,7 +67,7 @@ export function NavBar() {
                     />
                   </div>
 
-                  {IS_LOGGED && (
+                  {session && (
                     <div className="hidden sm:flex sm:items-center">
                       <div className="ml-10 flex items-baseline space-x-4">
                         {navigation.map((item) => (
@@ -100,14 +90,14 @@ export function NavBar() {
                 </div>
 
                 <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                  {IS_LOGGED ? (
+                  {session ? (
                     <Menu as="div" className="relative ml-3">
                       <div>
                         <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800">
                           <span className="absolute -inset-1.5"></span>
                           <span className="sr-only">Open user menu</span>
-                          <Image
-                            src={avatarImage}
+                          <img
+                            src={session.user.image ?? avatarImage}
                             alt="User avatar"
                             className="h-8 w-8 rounded-full"
                           />
@@ -124,22 +114,33 @@ export function NavBar() {
                         leaveTo="transform opacity-0 scale-95"
                       >
                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          {userNavigation.map((item) => (
-                            <Menu.Item key={item.name}>
-                              {({ active }) => (
-                                <Disclosure.Button
-                                  as="a"
-                                  href={item.href}
-                                  className={clsx(
-                                    "block px-4 py-2 text-sm text-gray-700",
-                                    active ? "bg-gray-100" : "",
-                                  )}
-                                >
-                                  {item.name}
-                                </Disclosure.Button>
-                              )}
-                            </Menu.Item>
-                          ))}
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Disclosure.Button
+                                as="a"
+                                href="#"
+                                className={clsx(
+                                  "block px-4 py-2 text-sm text-gray-700",
+                                  active ? "bg-gray-100" : "",
+                                )}
+                              >
+                                Your Profile
+                              </Disclosure.Button>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Disclosure.Button
+                                onClick={() => signOut()}
+                                className={clsx(
+                                  "flex w-full items-center px-4 py-2 text-sm text-gray-700",
+                                  active ? "bg-gray-100" : "",
+                                )}
+                              >
+                                Sign out
+                              </Disclosure.Button>
+                            )}
+                          </Menu.Item>
                         </Menu.Items>
                       </Transition>
                     </Menu>
@@ -181,7 +182,7 @@ export function NavBar() {
               </div>
 
               <Disclosure.Panel className="sm:hidden">
-                {IS_LOGGED ? (
+                {session ? (
                   <>
                     <div className="space-y-1 pb-3 pt-2">
                       {navigation.map((item) => (
@@ -205,32 +206,35 @@ export function NavBar() {
                     <div className="border-t border-gray-700 pb-3 pt-4">
                       <div className="flex items-center px-4">
                         <div className="flex-shrink-0">
-                          <Image
-                            src={avatarImage}
+                          <img
+                            src={session.user.image ?? avatarImage}
                             alt="User avatar"
                             className="h-10 w-10 rounded-full"
                           />
                         </div>
                         <div className="ml-3">
                           <div className="text-base font-medium leading-none text-white">
-                            {user.name}
+                            {session.user.name}
                           </div>
                           <div className="text-sm font-medium leading-none text-gray-400">
-                            {user.email}
+                            {session.user.email}
                           </div>
                         </div>
                       </div>
                       <div className="mt-3 space-y-1">
-                        {userNavigation.map((item) => (
-                          <Disclosure.Button
-                            key={item.name}
-                            as="a"
-                            href={item.href}
-                            className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                          >
-                            {item.name}
-                          </Disclosure.Button>
-                        ))}
+                        <Disclosure.Button
+                          as="a"
+                          href="#"
+                          className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                        >
+                          Your Profile
+                        </Disclosure.Button>
+                        <Disclosure.Button
+                          onClick={() => signOut()}
+                          className="flex w-full rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                        >
+                          Sign out
+                        </Disclosure.Button>
                       </div>
                     </div>
                   </>
@@ -256,7 +260,7 @@ export function NavBar() {
           )}
         </Disclosure>
 
-        {!IS_LOGGED && (
+        {!session && (
           <>
             <LogIn
               isOpen={openLogIn}
