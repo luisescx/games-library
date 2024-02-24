@@ -11,6 +11,8 @@ import tailwindLogo from "/public/images/talwind-logo.svg";
 import avatar from "/public/images/avatar.avif";
 import LogIn from "./nav-bar/log-in";
 import SignUp from "./nav-bar/sign-up";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 const tailwindLogoImage = tailwindLogo as StaticImageData;
 const avatarImage = avatar;
