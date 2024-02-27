@@ -87,7 +87,7 @@ export function Games() {
   const pathname = usePathname();
   const queryParams = useSearchParams();
 
-  const { data, fetchNextPage, isFetching, error, isError } =
+  const { data, fetchNextPage, isFetching, error } =
     api.game.getGames.useInfiniteQuery(
       {
         search,
