@@ -1,3 +1,5 @@
+import { add } from "date-fns";
+
 export const formatDate = (dateString: string) => {
   const dateObject = new Date(dateString);
 
@@ -8,4 +10,11 @@ export const formatDate = (dateString: string) => {
   });
 
   return formattedDate;
+};
+
+export const getDateFromTodayIsoString = (days: number) => {
+  const currentDate = new Date();
+
+  const addedDate = add(currentDate, { days });
+  return addedDate.toISOString();
 };
