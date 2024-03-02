@@ -1,9 +1,11 @@
 "use client";
 
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { EyeIcon, XMarkIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { api } from "@/trpc/react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type LogInProps = {
   isOpen: boolean;
@@ -12,6 +14,31 @@ type LogInProps = {
 
 export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const router = useRouter();
+
+  const signInCredentials = api.auth.signIn.useMutation({
+    cacheTime: 0,
+    retry: false,
+  });
+
+  const handleSignIn = useCallback(() => {
+    signInCredentials.mutate(
+      {
+        email: form.email,
+        password: form.password,
+      },
+      {
+        onSuccess: () => {
+          router.refresh();
+        },
+      },
+    );
+  }, [form.email, form.password, router, signInCredentials]);
 
   useEffect(() => {
     return () => {
@@ -69,7 +96,15 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                     </h2>
                   </div>
 
-                  <form className="space-y-6 pt-12" action="#" method="POST">
+                  <form
+                    className="space-y-6 pt-12"
+                    action="#"
+                    method="POST"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      handleSignIn();
+                    }}
+                  >
                     <div>
                       <label
                         htmlFor="email"
@@ -83,6 +118,13 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                           name="email"
                           type="email"
                           autoComplete="email"
+                          value={form.email}
+                          onChange={(e) =>
+                            setForm((oldState) => ({
+                              ...oldState,
+                              email: e.target.value,
+                            }))
+                          }
                           required
                           className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:text-sm sm:leading-6"
                         />
@@ -102,6 +144,12 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                           name="password"
                           type={showPassword ? "text" : "password"}
                           autoComplete="current-password"
+                          onChange={(e) =>
+                            setForm((oldState) => ({
+                              ...oldState,
+                              password: e.target.value,
+                            }))
+                          }
                           required
                           className="block w-full rounded-md border-0 py-1.5 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:text-sm sm:leading-6"
                         />
@@ -158,6 +206,9 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                       >
                         Sign in
                       </button>
+                      {!!signInCredentials.error && (
+                        <p className="mt-3 text-lg text-red-600">{`${signInCredentials.error.data?.code}: ${signInCredentials.error.message}`}</p>
+                      )}
                     </div>
 
                     <div className="flex w-full justify-center text-sm leading-6">

@@ -18,7 +18,10 @@ export default function SignUp({ isOpen, onCloseModal }: SignUpProps) {
     password: "",
   });
 
-  const createAccount = api.auth.createAccount.useMutation();
+  const createAccount = api.auth.createAccount.useMutation({
+    cacheTime: 0,
+    retry: false,
+  });
 
   useEffect(() => {
     return () => {
