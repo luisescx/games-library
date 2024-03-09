@@ -8,6 +8,7 @@ import {
 } from "@/utils/cryptAuth";
 import { getDateFromTodayIsoString } from "@/utils/date";
 import { TRPCError } from "@trpc/server";
+import { Prisma } from "@prisma/client";
 
 export const authRouter = createTRPCRouter({
   createAccount: publicProcedure
@@ -21,14 +22,31 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const hashPassword = await generatePasswordHash(input.password);
 
-      await ctx.db.user.create({
-        data: {
-          name: input.name,
-          email: input.email,
-          password: hashPassword,
-        },
-      });
+      try {
+        await ctx.db.user.create({
+          data: {
+            name: input.name,
+            email: input.email,
+            password: hashPassword,
+          },
+        });
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          if (e.code === "P2002") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "Email is Already in use",
+            });
+          }
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `${e.code}-${e.message}`,
+          });
+        }
+      }
     }),
+
   signIn: publicProcedure
     .input(
       z.object({
