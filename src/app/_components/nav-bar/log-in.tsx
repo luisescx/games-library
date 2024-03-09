@@ -84,7 +84,7 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                   </button>
                 </div>
 
-                <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6">
+                <div className="flex min-h-full flex-1 flex-col justify-center py-6 sm:px-6 sm:py-12">
                   <div className="sm:mx-auto sm:w-full sm:max-w-md">
                     <img
                       className="mx-auto h-10 w-auto"

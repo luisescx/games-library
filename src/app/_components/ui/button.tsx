@@ -3,11 +3,11 @@
 import { type VariantProps, cva } from "class-variance-authority";
 
 const button = cva(
-  "flex items-center disabled:cursor-not-allowed disabled:opacity-80 shadow-sm",
+  "flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-80 shadow-sm",
   {
     variants: {
       intent: {
-        primary: "bg-amber-400 hover:bg-amber-300 text-slate-900",
+        primary: "bg-amber-400 hover:bg-amber-500 text-slate-900",
         secondary: "bg-slate-900 hover:bg-slate-800 text-white",
       },
       size: {
