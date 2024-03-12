@@ -265,10 +265,18 @@ export function NavBar({ session }: NavBarProps) {
             <LogIn
               isOpen={openLogIn}
               onCloseModal={() => setOpenLogIn(false)}
+              onSignUpOpenModal={() => {
+                setOpenLogIn(false);
+                setOpenSignUp(true);
+              }}
             />
             <SignUp
               isOpen={openSignUp}
               onCloseModal={() => setOpenSignUp(false)}
+              onLoginOpenModal={() => {
+                setOpenSignUp(false);
+                setOpenLogIn(true);
+              }}
             />
           </>
         )}

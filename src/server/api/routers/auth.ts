@@ -44,6 +44,18 @@ export const authRouter = createTRPCRouter({
             message: `${e.code}-${e.message}`,
           });
         }
+
+        if (e instanceof TRPCError) {
+          throw new TRPCError({
+            code: e.code,
+            message: e.message,
+          });
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred",
+        });
       }
     }),
 
@@ -55,56 +67,77 @@ export const authRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.user.findUnique({
-        where: { email: input.email },
-        select: {
-          name: true,
-          password: true,
-          email: true,
-          id: true,
-          image: true,
-        },
-      });
+      try {
+        const user = await ctx.db.user.findUnique({
+          where: { email: input.email },
+          select: {
+            name: true,
+            password: true,
+            email: true,
+            id: true,
+            image: true,
+          },
+        });
 
-      if (user?.password) {
-        const passwordMatch = await compareHashPassword(
-          input.password,
-          user.password,
-        );
+        if (user?.password) {
+          const passwordMatch = await compareHashPassword(
+            input.password,
+            user.password,
+          );
 
-        if (passwordMatch) {
-          const sessionToken = generateHashHex();
-          const tomorrowIsoDate = getDateFromTodayIsoString(1);
+          if (passwordMatch) {
+            const sessionToken = generateHashHex();
+            const tomorrowIsoDate = getDateFromTodayIsoString(1);
 
-          const createdSession = await ctx.db.session.create({
-            data: {
-              sessionToken,
-              userId: user.id,
-              expires: tomorrowIsoDate,
-            },
-            select: {
-              sessionToken: true,
-              expires: true,
-            },
-          });
-
-          if (createdSession) {
-            cookies().set({
-              name: "next-auth.session-token",
-              value: createdSession.sessionToken,
-              maxAge: 24 * 60 * 60,
-              path: "/",
-              httpOnly: true,
+            const createdSession = await ctx.db.session.create({
+              data: {
+                sessionToken,
+                userId: user.id,
+                expires: tomorrowIsoDate,
+              },
+              select: {
+                sessionToken: true,
+                expires: true,
+              },
             });
 
-            return;
+            if (createdSession) {
+              cookies().set({
+                name: "next-auth.session-token",
+                value: createdSession.sessionToken,
+                maxAge: 24 * 60 * 60,
+                path: "/",
+                httpOnly: true,
+              });
+
+              return;
+            }
           }
         }
-      }
 
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "Invalid credentials",
-      });
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid credentials",
+        });
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `${e.code}-${e.message}`,
+          });
+        }
+
+        if (e instanceof TRPCError) {
+          throw new TRPCError({
+            code: e.code,
+            message: e.message,
+          });
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred",
+        });
+      }
     }),
 });

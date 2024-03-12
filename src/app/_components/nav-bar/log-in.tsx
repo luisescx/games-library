@@ -3,20 +3,56 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { EyeIcon, XMarkIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 import { api } from "@/trpc/react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import clsx from "clsx";
+import { Button } from "../ui/button";
 
 type LogInProps = {
   isOpen: boolean;
   onCloseModal: () => void;
+  onSignUpOpenModal: () => void;
 };
 
-export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
+const userSchema = z.object({
+  email: z.string().trim().min(1, { message: "Email is required" }).email({
+    message: "Must be a valid email",
+  }),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, { message: "You must enter a password" })
+    .min(6, { message: "Password must be at least 6 characters" })
+    .refine(
+      (val) => {
+        return !val.includes(" ");
+      },
+      {
+        message: "Password cannot contain spaces",
+      },
+    ),
+});
+
+type UserSchema = z.infer<typeof userSchema>;
+
+export default function LogIn({
+  isOpen,
+  onCloseModal,
+  onSignUpOpenModal,
+}: LogInProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<UserSchema>({
+    resolver: zodResolver(userSchema),
   });
 
   const router = useRouter();
@@ -26,19 +62,36 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
     retry: false,
   });
 
-  const handleSignIn = useCallback(() => {
-    signInCredentials.mutate(
-      {
-        email: form.email,
-        password: form.password,
-      },
-      {
-        onSuccess: () => {
-          router.refresh();
+  const handleSignIn = useCallback(
+    (data: UserSchema) => {
+      signInCredentials.mutate(
+        {
+          ...data,
         },
-      },
-    );
-  }, [form.email, form.password, router, signInCredentials]);
+        {
+          onSuccess: () => {
+            router.refresh();
+          },
+        },
+      );
+    },
+    [router, signInCredentials],
+  );
+
+  const handleCloseModal = useCallback(
+    (openLoginModal?: boolean) => {
+      reset();
+      signInCredentials.reset();
+
+      if (openLoginModal) {
+        onSignUpOpenModal();
+        return;
+      }
+
+      onCloseModal();
+    },
+    [reset, signInCredentials, onCloseModal, onSignUpOpenModal],
+  );
 
   useEffect(() => {
     return () => {
@@ -48,7 +101,7 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onCloseModal}>
+      <Dialog as="div" className="relative z-10" onClose={handleCloseModal}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -77,7 +130,7 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                   <button
                     type="button"
                     className="rounded-md bg-slate-900 text-white hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-transparent"
-                    onClick={onCloseModal}
+                    onClick={() => handleCloseModal()}
                   >
                     <span className="sr-only">Close</span>
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -96,14 +149,43 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                     </h2>
                   </div>
 
+                  <Transition
+                    show={!!signInCredentials.error}
+                    as={Fragment}
+                    enter="transform ease-out duration-300 transition"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="mt-4 rounded-md bg-red-50 p-4">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <XCircleIcon
+                            className="h-5 w-5 text-red-400"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <div className="ml-3">
+                          <h3 className="text-sm font-medium text-red-800">
+                            Error
+                          </h3>
+                          {!!signInCredentials.error && (
+                            <div className="mt-2 text-sm text-red-700">
+                              <p>{signInCredentials.error?.message}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Transition>
+
                   <form
-                    className="space-y-6 pt-12"
+                    className="pt-6"
                     action="#"
                     method="POST"
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      handleSignIn();
-                    }}
+                    onSubmit={handleSubmit(handleSignIn)}
                   >
                     <div>
                       <label
@@ -114,24 +196,27 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                       </label>
                       <div className="mt-2">
                         <input
-                          id="email"
-                          name="email"
-                          type="email"
+                          className={clsx(
+                            "block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:text-sm sm:leading-6",
+                            {
+                              "border-2 border-red-600 focus:border-0 focus:ring-2 focus:ring-red-600":
+                                !!errors.email?.message,
+                            },
+                          )}
+                          {...register("email")}
                           autoComplete="email"
-                          value={form.email}
-                          onChange={(e) =>
-                            setForm((oldState) => ({
-                              ...oldState,
-                              email: e.target.value,
-                            }))
-                          }
-                          required
-                          className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:text-sm sm:leading-6"
                         />
+                        <div
+                          className={clsx("mt-1 text-sm text-red-600", {
+                            "opacity-0": !errors.email?.message,
+                          })}
+                        >
+                          {errors.email?.message ?? "-"}
+                        </div>
                       </div>
                     </div>
 
-                    <div>
+                    <div className="mt-2">
                       <label
                         htmlFor="password"
                         className="block text-sm font-medium leading-6 text-white"
@@ -140,18 +225,16 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                       </label>
                       <div className="relative mt-2 flex">
                         <input
-                          id="password"
-                          name="password"
                           type={showPassword ? "text" : "password"}
                           autoComplete="current-password"
-                          onChange={(e) =>
-                            setForm((oldState) => ({
-                              ...oldState,
-                              password: e.target.value,
-                            }))
-                          }
-                          required
-                          className="block w-full rounded-md border-0 py-1.5 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:text-sm sm:leading-6"
+                          {...register("password")}
+                          className={clsx(
+                            "block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-black sm:text-sm sm:leading-6",
+                            {
+                              "border-2 border-red-600 focus:border-0 focus:ring-2 focus:ring-red-600":
+                                !!errors.password?.message,
+                            },
+                          )}
                         />
 
                         <div
@@ -171,9 +254,17 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                           )}
                         </div>
                       </div>
+
+                      <div
+                        className={clsx("mt-1 text-sm text-red-600", {
+                          "opacity-0": !errors.password?.message,
+                        })}
+                      >
+                        {errors.password?.message ?? "-"}
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <div className="mt-6 flex items-center justify-between">
                       <div className="flex items-center">
                         <input
                           id="remember-me"
@@ -199,30 +290,31 @@ export default function LogIn({ isOpen, onCloseModal }: LogInProps) {
                       </div>
                     </div>
 
-                    <div>
-                      <button
+                    <div className="mt-4">
+                      <Button
                         type="submit"
-                        className="flex w-full justify-center rounded-md bg-amber-400 px-3 py-1.5 text-sm font-semibold leading-6 text-slate-900 shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+                        className="mt-2 flex w-full"
+                        size="large"
+                        isLoading={signInCredentials.isLoading}
+                        disabled={signInCredentials.isLoading}
                       >
                         Sign in
-                      </button>
-                      {!!signInCredentials.error && (
-                        <p className="mt-3 text-lg text-red-600">{`${signInCredentials.error.data?.code}: ${signInCredentials.error.message}`}</p>
-                      )}
+                      </Button>
                     </div>
 
-                    <div className="flex w-full justify-center text-sm leading-6">
-                      <a
-                        href="#"
-                        className="font-semibold text-amber-400 hover:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-4 focus:ring-offset-slate-900"
+                    <div className="mt-4 flex w-full justify-center text-sm leading-6">
+                      <button
+                        type="button"
+                        onClick={() => handleCloseModal(true)}
+                        className="font-semibold text-amber-400 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-4 focus:ring-offset-slate-900"
                       >
                         Dont&apos;t have an account? Sign up
-                      </a>
+                      </button>
                     </div>
                   </form>
 
                   <div>
-                    <div className="relative mt-10">
+                    <div className="relative mt-8">
                       <div
                         className="absolute inset-0 flex items-center"
                         aria-hidden="true"

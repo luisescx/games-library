@@ -14,6 +14,7 @@ import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 type SignUpProps = {
   isOpen: boolean;
   onCloseModal: () => void;
+  onLoginOpenModal: () => void;
 };
 
 const userSchema = z.object({
@@ -37,7 +38,11 @@ const userSchema = z.object({
 
 type UserSchema = z.infer<typeof userSchema>;
 
-export default function SignUp({ isOpen, onCloseModal }: SignUpProps) {
+export default function SignUp({
+  isOpen,
+  onCloseModal,
+  onLoginOpenModal,
+}: SignUpProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -70,11 +75,21 @@ export default function SignUp({ isOpen, onCloseModal }: SignUpProps) {
     [createAccount, reset],
   );
 
-  const handleCloseModal = useCallback(() => {
-    reset();
-    createAccount.reset();
-    onCloseModal();
-  }, [createAccount, onCloseModal, reset]);
+  const handleCloseModal = useCallback(
+    (openLoginModal?: boolean) => {
+      reset();
+      createAccount.reset();
+
+      
+      if (openLoginModal) {
+        onLoginOpenModal();
+        return;
+      }
+
+      onCloseModal();
+    },
+    [createAccount, onCloseModal, reset, onLoginOpenModal],
+  );
 
   useEffect(() => {
     return () => {
@@ -116,7 +131,7 @@ export default function SignUp({ isOpen, onCloseModal }: SignUpProps) {
                     <button
                       type="button"
                       className="rounded-md bg-slate-900 text-white hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-transparent"
-                      onClick={handleCloseModal}
+                      onClick={() => handleCloseModal()}
                     >
                       <span className="sr-only">Close</span>
                       <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -333,12 +348,13 @@ export default function SignUp({ isOpen, onCloseModal }: SignUpProps) {
                       </div>
 
                       <div className="mt-4 flex w-full justify-center text-sm leading-6">
-                        <a
-                          href="#"
+                        <button
+                          type="button"
+                          onClick={() => handleCloseModal(true)}
                           className="font-semibold text-amber-400 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-4 focus:ring-offset-slate-900"
                         >
                           Already have an account? Sign in
-                        </a>
+                        </button>
                       </div>
                     </form>
                   </div>
