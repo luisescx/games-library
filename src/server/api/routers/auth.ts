@@ -58,7 +58,6 @@ export const authRouter = createTRPCRouter({
         });
       }
     }),
-
   signIn: publicProcedure
     .input(
       z.object({

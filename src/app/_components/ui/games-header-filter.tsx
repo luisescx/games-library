@@ -29,7 +29,7 @@ export function GamesHeaderFilter({
       />
       <label
         htmlFor={`${type}-${option.id}`}
-        className="ml-3 min-w-0 flex-1 text-white"
+        className="ml-3 min-w-0 flex-1 text-white hover:cursor-pointer"
       >
         {option.name}
       </label>

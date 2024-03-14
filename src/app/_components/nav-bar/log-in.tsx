@@ -264,22 +264,7 @@ export default function LogIn({
                       </div>
                     </div>
 
-                    <div className="mt-6 flex items-center justify-between">
-                      <div className="flex items-center">
-                        <input
-                          id="remember-me"
-                          name="remember-me"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300  text-amber-400 focus:ring-amber-400 focus:ring-offset-slate-900"
-                        />
-                        <label
-                          htmlFor="remember-me"
-                          className="ml-3 block text-sm leading-6 text-white"
-                        >
-                          Remember me
-                        </label>
-                      </div>
-
+                    <div className="mt-6 flex items-center justify-end">
                       <div className="text-sm leading-6">
                         <a
                           href="#"
