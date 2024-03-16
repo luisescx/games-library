@@ -3,7 +3,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { EyeIcon, XMarkIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
+import { XCircleIcon } from "@heroicons/react/20/solid";
 import { api } from "@/trpc/react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -266,12 +266,16 @@ export default function LogIn({
 
                     <div className="mt-6 flex items-center justify-end">
                       <div className="text-sm leading-6">
-                        <a
-                          href="#"
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleCloseModal();
+                            router.push("/recover-account");
+                          }}
                           className="font-semibold text-amber-400 hover:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-4 focus:ring-offset-slate-900"
                         >
                           Forgot password?
-                        </a>
+                        </button>
                       </div>
                     </div>
 
