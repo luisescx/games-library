@@ -36,6 +36,12 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
+    MY_EMAIL: z.string({
+      required_error: "You forgot to add the email",
+    }),
+    MY_EMAIL_APP_PASSWORD: z.string({
+      required_error: "You forgot to add the email password key",
+    }),
   },
 
   /**
@@ -62,6 +68,8 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    MY_EMAIL: process.env.MY_EMAIL,
+    MY_EMAIL_APP_PASSWORD: process.env.MY_EMAIL_APP_PASSWORD,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

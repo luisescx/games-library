@@ -46,6 +46,8 @@ model User {
     password      String?   
     email         String   @unique
     emailVerified DateTime?
+    emailResetPasswordToken String?
+    passwordResetTokenExpired DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
