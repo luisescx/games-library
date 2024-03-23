@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { Button } from "../ui/button";
+import { StaticToast } from "../ui/static-toast";
 
 type LogInProps = {
   isOpen: boolean;
@@ -149,37 +150,12 @@ export default function LogIn({
                     </h2>
                   </div>
 
-                  <Transition
-                    show={!!signInCredentials.error}
-                    as={Fragment}
-                    enter="transform ease-out duration-300 transition"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <div className="mt-4 rounded-md bg-red-50 p-4">
-                      <div className="flex">
-                        <div className="flex-shrink-0">
-                          <XCircleIcon
-                            className="h-5 w-5 text-red-400"
-                            aria-hidden="true"
-                          />
-                        </div>
-                        <div className="ml-3">
-                          <h3 className="text-sm font-medium text-red-800">
-                            Error
-                          </h3>
-                          {!!signInCredentials.error && (
-                            <div className="mt-2 text-sm text-red-700">
-                              <p>{signInCredentials.error?.message}</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Transition>
+                  <StaticToast
+                    type="error"
+                    showToast={!!signInCredentials.error}
+                    title="Error"
+                    message={signInCredentials.error?.message ?? ""}
+                  />
 
                   <form
                     className="pt-6"
