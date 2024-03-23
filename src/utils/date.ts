@@ -18,3 +18,9 @@ export const getDateFromTodayIsoString = (days: number) => {
   const addedDate = add(currentDate, { days });
   return addedDate.toISOString();
 };
+
+export const getExpiryTimestamp = (hours: number) => {
+  const currentDate = new Date();
+  const expiryDate = add(currentDate, { hours });
+  return expiryDate.toISOString();
+};
