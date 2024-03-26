@@ -6,7 +6,11 @@ import {
   generateHashHex,
   generatePasswordHash,
 } from "@/utils/cryptAuth";
-import { getDateFromTodayIsoString, getExpiryTimestamp } from "@/utils/date";
+import {
+  getDateFromTodayIsoString,
+  getExpiryTimestamp,
+  isNowLessThanDate,
+} from "@/utils/date";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 import nodemailer from "nodemailer";
@@ -168,7 +172,7 @@ export const authRouter = createTRPCRouter({
         });
 
         if (user) {
-          const isUpdated = await ctx.db.user.update({
+          const userUpdated = await ctx.db.user.update({
             where: {
               email: user.email,
             },
@@ -176,14 +180,20 @@ export const authRouter = createTRPCRouter({
               emailResetPasswordToken: generateHashHex(),
               passwordResetTokenExpired: getExpiryTimestamp(1),
             },
+            select: {
+              id: true,
+              emailResetPasswordToken: true,
+            },
           });
 
-          if (isUpdated) {
+          if (userUpdated) {
+            const recoverAccountUrl = `${env.NEXTAUTH_URL}/recover-account/${userUpdated.emailResetPasswordToken}`;
+
             const mailOptions = {
               from: '"Games library" <' + env.MY_EMAIL + ">",
               to: input.email,
               subject: "Password reset request",
-              html: `We received a request to reset your password for our app. Please click on the following link to reset your password: .If you did not request a password reset, please ignore this email.`,
+              html: `We received a request to reset your password for our app. Please click on the following link to reset your password: ${recoverAccountUrl} .If you did not request a password reset, please ignore this email.`,
             };
 
             await transporter.sendMail(mailOptions);
@@ -197,6 +207,128 @@ export const authRouter = createTRPCRouter({
           message:
             "The email provided was not found in our records. Please ensure you have entered the correct email or register to create a new account.",
         });
+      } catch (e) {
+        if (e instanceof TRPCError) {
+          throw new TRPCError({
+            code: e.code,
+            message: e.message,
+          });
+        }
+
+        if (e instanceof Error) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: e.message,
+          });
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred",
+        });
+      }
+    }),
+  checkRecoverAccountToken: publicProcedure
+    .input(
+      z.object({
+        accessToken: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const user = await ctx.db.user.findFirst({
+          where: { emailResetPasswordToken: input.accessToken },
+          select: {
+            passwordResetTokenExpired: true,
+            emailResetPasswordToken: true,
+          },
+        });
+
+        if (user) {
+          const isValidAccessToken = isNowLessThanDate(
+            user.passwordResetTokenExpired!,
+          );
+
+          if (isValidAccessToken) {
+            return true;
+          }
+
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message:
+              "Your access token has expired. Please, ask for another token to recover your account",
+          });
+        }
+
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "The access token to reset your account is invalid",
+        });
+      } catch (e) {
+        if (e instanceof TRPCError) {
+          throw new TRPCError({
+            code: e.code,
+            message: e.message,
+          });
+        }
+
+        if (e instanceof Error) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: e.message,
+          });
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred",
+        });
+      }
+    }),
+  updatePasswordByRecoverAccount: publicProcedure
+    .input(
+      z.object({
+        password: z.string(),
+        accessToken: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const user = await ctx.db.user.findFirst({
+          where: { emailResetPasswordToken: input.accessToken },
+          select: {
+            passwordResetTokenExpired: true,
+            emailResetPasswordToken: true,
+            email: true,
+          },
+        });
+
+        if (user) {
+          const hashPassword = await generatePasswordHash(input.password);
+
+          const userUpdated = await ctx.db.user.update({
+            where: {
+              email: user.email,
+            },
+            data: {
+              emailResetPasswordToken: null,
+              passwordResetTokenExpired: null,
+              password: hashPassword,
+            },
+            select: {
+              id: true,
+            },
+          });
+
+          if (userUpdated) {
+            return;
+          }
+
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "An error occurred",
+          });
+        }
       } catch (e) {
         if (e instanceof TRPCError) {
           throw new TRPCError({

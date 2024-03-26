@@ -24,3 +24,10 @@ export const getExpiryTimestamp = (hours: number) => {
   const expiryDate = add(currentDate, { hours });
   return expiryDate.toISOString();
 };
+
+export const isNowLessThanDate = (date: Date) => {
+  const currentTimestamp = new Date().getTime();
+  const dateProvidedTimestamp = date.getTime();
+
+  return currentTimestamp < dateProvidedTimestamp;
+};
